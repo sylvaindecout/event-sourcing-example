@@ -1,0 +1,10 @@
+fr.sdecout.eventsourcing.StreamRevisionArbitraryProvider
+
+fr.sdecout.eventsourcing.time.InstantArbitraryProvider
+fr.sdecout.eventsourcing.time.ZonedDateTimeArbitraryProvider
+fr.sdecout.eventsourcing.time.ZoneIdArbitraryProvider
+
+fr.sdecout.eventsourcing.reminder.domain.CountryArbitraryProvider
+fr.sdecout.eventsourcing.reminder.domain.ReminderAggregateArbitraryProvider
+fr.sdecout.eventsourcing.reminder.domain.ReminderEventArbitraryProvider
+fr.sdecout.eventsourcing.reminder.domain.ReminderStateArbitraryProvider
