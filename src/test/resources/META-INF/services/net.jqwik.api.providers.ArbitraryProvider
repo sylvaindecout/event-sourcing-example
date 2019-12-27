@@ -1,0 +1,10 @@
+fr.xebia.sdecout.eventsourcing.StreamRevisionArbitraryProvider
+
+fr.xebia.sdecout.eventsourcing.time.InstantArbitraryProvider
+fr.xebia.sdecout.eventsourcing.time.ZonedDateTimeArbitraryProvider
+fr.xebia.sdecout.eventsourcing.time.ZoneIdArbitraryProvider
+
+fr.xebia.sdecout.eventsourcing.reminder.domain.CountryArbitraryProvider
+fr.xebia.sdecout.eventsourcing.reminder.domain.ReminderAggregateArbitraryProvider
+fr.xebia.sdecout.eventsourcing.reminder.domain.ReminderEventArbitraryProvider
+fr.xebia.sdecout.eventsourcing.reminder.domain.ReminderStateArbitraryProvider
