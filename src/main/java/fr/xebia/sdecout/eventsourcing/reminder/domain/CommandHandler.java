@@ -48,6 +48,10 @@ public final class CommandHandler {
         handle(reminderId, reminderAggregate -> reminderAggregate.assignTo(operator));
     }
 
+    public void unassign(final String reminderId) {
+        handle(reminderId, reminderAggregate -> reminderAggregate.unassign());
+    }
+
     public void transfer(final String reminderId, final Country country) {
         handle(reminderId, reminderAggregate -> reminderAggregate.transferTo(country));
     }

@@ -58,6 +58,13 @@ public interface ReminderEvent extends Event {
     }
 
     @Value
+    final class ReminderUnassigned implements ReminderEvent {
+        @NonNull String reminderId;
+        @NonNull StreamRevision version;
+        @NonNull Instant timestamp;
+    }
+
+    @Value
     final class ReminderTransferred implements ReminderEvent {
         @NonNull String reminderId;
         @NonNull StreamRevision version;

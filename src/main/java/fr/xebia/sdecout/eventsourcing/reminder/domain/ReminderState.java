@@ -46,9 +46,10 @@ public final class ReminderState implements State<ReminderEvent> {
             builder.status(ReminderStatus.PENDING);
         } else if (event instanceof ReminderEvent.ReminderAssigned) {
             builder.assignee(((ReminderEvent.ReminderAssigned) event).getAssignee());
+        } else if (event instanceof ReminderEvent.ReminderUnassigned) {
+            builder.assignee(null);
         } else if (event instanceof ReminderEvent.ReminderTransferred) {
-            builder.country(((ReminderEvent.ReminderTransferred) event).getCountry())
-                .assignee(null);
+            builder.country(((ReminderEvent.ReminderTransferred) event).getCountry());
         } else if (event instanceof ReminderEvent.ReminderCancelled) {
             builder.status(ReminderStatus.CANCELLED);
         } else {

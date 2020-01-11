@@ -67,8 +67,17 @@ public final class ReminderAggregate implements Aggregate<ReminderEvent, Reminde
         }
     }
 
+    void unassign() {
+        if (state.getStatus() == PENDING) {
+            raise(new ReminderEvent.ReminderUnassigned(state.getId(), state.getVersion().next(), now(clock)));
+        } else {
+            throw new InvalidUpdateDeniedException(state.getId(), state.getStatus(), "unassign");
+        }
+    }
+
     void transferTo(final Country country) {
         if (state.getStatus() == PENDING) {
+            raise(new ReminderEvent.ReminderUnassigned(state.getId(), state.getVersion().next(), now(clock)));
             raise(new ReminderEvent.ReminderTransferred(state.getId(), state.getVersion().next(), now(clock), country));
         } else {
             throw new InvalidUpdateDeniedException(state.getId(), state.getStatus(), "transfer to " + country);

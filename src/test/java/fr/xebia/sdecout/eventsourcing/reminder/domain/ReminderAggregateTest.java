@@ -120,6 +120,24 @@ class ReminderAggregateTest {
     }
 
     @Property
+    void should_unassign_reminder_with_pending_status(@ForAll("pendingReminder") ReminderAggregate aggregate) {
+        final StreamRevision formerVersion = aggregate.getState().getVersion();
+
+        aggregate.unassign();
+
+        assertThat(aggregate.getPendingEvents()).containsExactly(
+                new ReminderEvent.ReminderUnassigned(aggregate.getState().getId(), formerVersion.next(), NOW)
+        );
+    }
+
+    @Property
+    void should_fail_to_unassign_reminder_with_status_other_than_pending(@ForAll("cancelledReminder") ReminderAggregate aggregate) {
+        assertThatExceptionOfType(InvalidUpdateDeniedException.class)
+                .isThrownBy(() -> aggregate.unassign())
+                .withMessage("Update denied for reminder '%s' (status: 'CANCELLED'): unassign", aggregate.getState().getId());
+    }
+
+    @Property
     void should_transfer_reminder_with_pending_status(@ForAll("pendingReminder") ReminderAggregate aggregate,
                                                   @ForAll Country country) {
         final StreamRevision formerVersion = aggregate.getState().getVersion();
@@ -128,7 +146,8 @@ class ReminderAggregateTest {
 
         assertSoftly(softly -> {
             softly.assertThat(aggregate.getPendingEvents()).containsExactly(
-                    new ReminderEvent.ReminderTransferred(aggregate.getState().getId(), formerVersion.next(), NOW, country)
+                    new ReminderEvent.ReminderUnassigned(aggregate.getState().getId(), formerVersion.next(), NOW),
+                    new ReminderEvent.ReminderTransferred(aggregate.getState().getId(), formerVersion.next().next(), NOW, country)
             );
             softly.assertThat(aggregate.getState().getCountry()).isEqualTo(country);
             softly.assertThat(aggregate.getState().getAssignee()).isNull();
