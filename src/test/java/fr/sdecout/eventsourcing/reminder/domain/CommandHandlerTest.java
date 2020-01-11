@@ -278,6 +278,51 @@ class CommandHandlerTest {
     }
 
     @Property
+    void should_unassign_pending_reminder(@ForAll String reminderId, @ForAll String assignee) {
+        Mockito.reset(eventStore);
+        given(eventStore.find(reminderId)).willReturn(Optional.of(aPendingReminder(reminderId, clock)));
+
+        commandHandler.unassign(reminderId);
+
+        then(eventStore).should().save(aggregateWithPendingEvents(
+                new ReminderEvent.ReminderUnassigned(reminderId, new StreamRevision(2), NOW)
+        ));
+    }
+
+    @Property
+    void should_fail_to_unassign_unknown_reminder(@ForAll String reminderId) {
+        Mockito.reset(eventStore);
+        given(eventStore.find(reminderId)).willReturn(Optional.empty());
+
+        assertThatIllegalStateException()
+                .isThrownBy(() -> commandHandler.unassign(reminderId))
+                .withMessage("Unexpected command: reminder ID does not exist");
+        then(eventStore).should(never()).save(any());
+    }
+
+    @Property
+    void should_fail_to_unassign_cancelled_reminder(@ForAll String reminderId) {
+        Mockito.reset(eventStore);
+        given(eventStore.find(reminderId)).willReturn(Optional.of(aCancelledReminder(reminderId, clock)));
+
+        assertThatExceptionOfType(InvalidUpdateDeniedException.class)
+                .isThrownBy(() -> commandHandler.unassign(reminderId))
+                .withMessage("Update denied for reminder '%s' (status: 'CANCELLED'): unassign", reminderId);
+        then(eventStore).should(never()).save(any());
+    }
+
+    @Property
+    void should_fail_to_unassign_done_reminder(@ForAll String reminderId) {
+        Mockito.reset(eventStore);
+        given(eventStore.find(reminderId)).willReturn(Optional.of(aDoneReminder(reminderId, clock)));
+
+        assertThatExceptionOfType(InvalidUpdateDeniedException.class)
+                .isThrownBy(() -> commandHandler.unassign(reminderId))
+                .withMessage("Update denied for reminder '%s' (status: 'DONE'): unassign", reminderId);
+        then(eventStore).should(never()).save(any());
+    }
+
+    @Property
     void should_transfer_pending_reminder(@ForAll String reminderId, @ForAll Country country) {
         Mockito.reset(eventStore);
         given(eventStore.find(reminderId)).willReturn(Optional.of(aPendingReminder(reminderId, clock)));
@@ -285,7 +330,8 @@ class CommandHandlerTest {
         commandHandler.transfer(reminderId, country);
 
         then(eventStore).should().save(aggregateWithPendingEvents(
-                new ReminderEvent.ReminderTransferred(reminderId, new StreamRevision(2), NOW, country)
+                new ReminderEvent.ReminderUnassigned(reminderId, new StreamRevision(2), NOW),
+                new ReminderEvent.ReminderTransferred(reminderId, new StreamRevision(3), NOW, country)
         ));
     }
 

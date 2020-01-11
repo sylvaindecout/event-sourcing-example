@@ -133,6 +133,25 @@ class ReminderStateTest {
     }
 
     @Property
+    void should_apply_ReminderUnassigned_event(@ForAll ReminderState formerState, @ForAll String reminderId,
+                                             @ForAll Instant timestamp) {
+        final ReminderEvent.ReminderUnassigned event = new ReminderEvent.ReminderUnassigned(reminderId, formerState.getVersion().next(), timestamp);
+
+        final ReminderState updatedState = formerState.apply(event);
+
+        assertThat(updatedState).isEqualTo(ReminderState.builder()
+                .version(formerState.getVersion().next())
+                .id(formerState.getId())
+                .interventionId(formerState.getInterventionId())
+                .status(formerState.getStatus())
+                .type(formerState.getType())
+                .country(formerState.getCountry())
+                .assignee(null)
+                .scheduledTime(formerState.getScheduledTime())
+                .build());
+    }
+
+    @Property
     void should_apply_ReminderTransferred_event(@ForAll ReminderState formerState, @ForAll String reminderId,
                                             @ForAll Instant timestamp, @ForAll Country country) {
         final ReminderEvent.ReminderTransferred event = new ReminderEvent.ReminderTransferred(reminderId, formerState.getVersion().next(), timestamp, country);
@@ -146,7 +165,7 @@ class ReminderStateTest {
                 .status(formerState.getStatus())
                 .type(formerState.getType())
                 .country(event.getCountry())
-                .assignee(null)
+                .assignee(formerState.getAssignee())
                 .scheduledTime(formerState.getScheduledTime())
                 .build());
     }
