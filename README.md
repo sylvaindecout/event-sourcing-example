@@ -1,5 +1,7 @@
 # Event sourcing example
 
+[![Tests](https://github.com/sylvaindecout/event-sourcing-example/actions/workflows/maven.yml/badge.svg?branch=master)](https://github.com/sylvaindecout/event-sourcing-example/actions/workflows/maven.yml)
+
 ## Use case
 A business has to manage **interventions**.
 
