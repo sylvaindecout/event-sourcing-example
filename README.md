@@ -4,6 +4,10 @@
 
 ## Usage
 
+*Note: This project depends on a personal GitHub Package Registry. In order to build locally, it is necessary to set
+USERNAME and TOKEN environment variables. Instructions for the generation of a token are available in
+[Creating a personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token).*
+
 Run tests: `mvn clean test`
 
 Run mutation coverage: `mvn org.pitest:pitest-maven:mutationCoverage`

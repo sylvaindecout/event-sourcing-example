@@ -24,6 +24,7 @@
         <archunit.version>0.22.0</archunit.version>
         <lombok.version>1.18.22</lombok.version>
         <guava.version>31.0.1-jre</guava.version>
+        <documentation-annotations.version>0.1.4</documentation-annotations.version>
 
         <!-- Maven plug-in versions -->
         <pitest-maven-plugin.version>1.7.2</pitest-maven-plugin.version>
@@ -41,6 +42,11 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>${guava.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>fr.sdecout.annotations</groupId>
+            <artifactId>documentation-annotations</artifactId>
+            <version>${documentation-annotations.version}</version>
         </dependency>
 
         <!-- Tests -->
