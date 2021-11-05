@@ -101,21 +101,20 @@
                 <groupId>org.pitest</groupId>
                 <artifactId>pitest-maven</artifactId>
                 <version>${pitest-maven-plugin.version}</version>
-                <executions>
-                    <execution>
-                        <phase>integration-test</phase>
-                        <goals>
-                            <goal>mutationCoverage</goal>
-                        </goals>
-                    </execution>
-                </executions>
                 <configuration>
                     <targetClasses>
                         <param>fr.sdecout.*</param>
                     </targetClasses>
+                    <!-- ArchUnit test classes need to be excluded specifically, until ArchUnit supports JUnit tags. -->
+                    <excludedTestClasses>
+                        <excludedTestClass>*.ArchitectureTest</excludedTestClass>
+                    </excludedTestClasses>
                     <outputFormats>
                         <outputFormat>HTML</outputFormat>
                     </outputFormats>
+                    <excludedGroups>
+                        <excludedGroup>Integration</excludedGroup>
+                    </excludedGroups>
                 </configuration>
                 <dependencies>
                     <dependency>
