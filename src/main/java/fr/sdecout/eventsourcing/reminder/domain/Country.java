@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 import static com.google.common.base.Preconditions.checkArgument;
 
 @Value
-public final class Country {
+public class Country {
 
     private static final Pattern pattern = Pattern.compile("\\p{Alpha}{2}");
 

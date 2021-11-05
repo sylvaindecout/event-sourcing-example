@@ -5,7 +5,7 @@ import lombok.Value;
 import static java.lang.String.format;
 
 @Value
-public final class StreamRevision {
+public class StreamRevision {
 
     private static final StreamRevision DEFAULT = new StreamRevision(0);
 

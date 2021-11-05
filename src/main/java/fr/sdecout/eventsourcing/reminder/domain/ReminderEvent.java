@@ -17,14 +17,14 @@ public interface ReminderEvent extends Event {
     }
 
     @Value
-    final class ReminderMarkedAsDone implements ReminderEvent {
+    class ReminderMarkedAsDone implements ReminderEvent {
         @NonNull String reminderId;
         @NonNull StreamRevision version;
         @NonNull Instant timestamp;
     }
 
     @Value
-    final class ReminderScheduled implements ReminderEvent {
+    class ReminderScheduled implements ReminderEvent {
         @NonNull String reminderId;
         @NonNull StreamRevision version;
         @NonNull Instant timestamp;
@@ -35,7 +35,7 @@ public interface ReminderEvent extends Event {
     }
 
     @Value
-    final class ReminderRescheduled implements ReminderEvent {
+    class ReminderRescheduled implements ReminderEvent {
         @NonNull String reminderId;
         @NonNull StreamRevision version;
         @NonNull Instant timestamp;
@@ -43,14 +43,14 @@ public interface ReminderEvent extends Event {
     }
 
     @Value
-    final class ReminderReopened implements ReminderEvent {
+    class ReminderReopened implements ReminderEvent {
         @NonNull String reminderId;
         @NonNull StreamRevision version;
         @NonNull Instant timestamp;
     }
 
     @Value
-    final class ReminderAssigned implements ReminderEvent {
+    class ReminderAssigned implements ReminderEvent {
         @NonNull String reminderId;
         @NonNull StreamRevision version;
         @NonNull Instant timestamp;
@@ -58,14 +58,14 @@ public interface ReminderEvent extends Event {
     }
 
     @Value
-    final class ReminderUnassigned implements ReminderEvent {
+    class ReminderUnassigned implements ReminderEvent {
         @NonNull String reminderId;
         @NonNull StreamRevision version;
         @NonNull Instant timestamp;
     }
 
     @Value
-    final class ReminderTransferred implements ReminderEvent {
+    class ReminderTransferred implements ReminderEvent {
         @NonNull String reminderId;
         @NonNull StreamRevision version;
         @NonNull Instant timestamp;
@@ -73,7 +73,7 @@ public interface ReminderEvent extends Event {
     }
 
     @Value
-    final class ReminderCancelled implements ReminderEvent {
+    class ReminderCancelled implements ReminderEvent {
         @NonNull String reminderId;
         @NonNull StreamRevision version;
         @NonNull Instant timestamp;

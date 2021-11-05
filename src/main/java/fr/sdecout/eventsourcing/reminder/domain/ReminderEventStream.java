@@ -10,7 +10,7 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 
 @Value
-public final class ReminderEventStream implements EventStream<ReminderEvent, ReminderState> {
+public class ReminderEventStream implements EventStream<ReminderEvent, ReminderState> {
 
     private static final ReminderEventStream EMPTY = new ReminderEventStream(emptyList());
     private static final ReminderState BLANK_STATE = ReminderState.builder().version(defaultStreamRevision()).build();

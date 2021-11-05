@@ -16,7 +16,7 @@ import static lombok.AccessLevel.PRIVATE;
 @Value
 @Builder(access = PACKAGE)
 @AllArgsConstructor(access = PRIVATE)
-public final class ReminderState implements State<ReminderEvent> {
+public class ReminderState implements State<ReminderEvent> {
 
     StreamRevision version;
     String id;
