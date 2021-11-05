@@ -23,7 +23,7 @@ public class ReminderEventArbitraryProvider implements ArbitraryProvider {
 
     @Override
     public Set<Arbitrary<?>> provideFor(final TypeUsage targetType, final ArbitraryProvider.SubtypeProvider subtypeProvider) {
-        return singleton(oneOf(
+        return singleton(oneOf(Set.of(
                 reminderScheduled(),
                 reminderCancelled(),
                 reminderMarkedAsDone(),
@@ -31,7 +31,7 @@ public class ReminderEventArbitraryProvider implements ArbitraryProvider {
                 reminderTransferred(),
                 reminderReopened(),
                 reminderRescheduled()
-        ));
+        )));
     }
 
     private static Arbitrary<ReminderEvent> reminderScheduled() {

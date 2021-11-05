@@ -12,7 +12,7 @@ import java.util.Set;
 
 import static java.util.Collections.singleton;
 import static net.jqwik.api.Arbitraries.*;
-import static net.jqwik.api.Combinators.withBuilder;
+import static net.jqwik.api.Builders.withBuilder;
 
 public class ReminderStateArbitraryProvider implements ArbitraryProvider {
 
