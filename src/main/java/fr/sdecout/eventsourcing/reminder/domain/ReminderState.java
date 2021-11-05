@@ -14,7 +14,7 @@ import static lombok.AccessLevel.PACKAGE;
 import static lombok.AccessLevel.PRIVATE;
 
 @Value
-@Builder(access = PACKAGE)
+@Builder(access = PACKAGE, toBuilder = true)
 @AllArgsConstructor(access = PRIVATE)
 public class ReminderState implements State<ReminderEvent> {
 
@@ -29,17 +29,17 @@ public class ReminderState implements State<ReminderEvent> {
 
     public <T extends ReminderEvent> ReminderState apply(final T event) {
         validateVersion(event);
-        final var builder = copy(this)
-            .version(event.getVersion());
+        final var builder = this.toBuilder()
+                .version(event.getVersion());
         if (event instanceof ReminderEvent.ReminderMarkedAsDone) {
             builder.status(ReminderStatus.DONE);
         } else if (event instanceof ReminderEvent.ReminderScheduled) {
             builder.id(event.getReminderId())
-                .interventionId(((ReminderEvent.ReminderScheduled) event).getInterventionId())
-                .status(ReminderStatus.PENDING)
-                .type(((ReminderEvent.ReminderScheduled) event).getReminderType())
-                .country(((ReminderEvent.ReminderScheduled) event).getCountry())
-                .scheduledTime(((ReminderEvent.ReminderScheduled) event).getScheduledTime());
+                    .interventionId(((ReminderEvent.ReminderScheduled) event).getInterventionId())
+                    .status(ReminderStatus.PENDING)
+                    .type(((ReminderEvent.ReminderScheduled) event).getReminderType())
+                    .country(((ReminderEvent.ReminderScheduled) event).getCountry())
+                    .scheduledTime(((ReminderEvent.ReminderScheduled) event).getScheduledTime());
         } else if (event instanceof ReminderEvent.ReminderRescheduled) {
             builder.scheduledTime(((ReminderEvent.ReminderRescheduled) event).getScheduledTime());
         } else if (event instanceof ReminderEvent.ReminderReopened) {
@@ -61,19 +61,8 @@ public class ReminderState implements State<ReminderEvent> {
     private void validateVersion(final Event event) {
         if (!event.getVersion().isNext(this.getVersion())) {
             throw new IllegalStateException(format("Inconsistent stream revision for stream '%s': %s (expected: %s)",
-                event.getStreamId(), event.getVersion(), this.getVersion().next()));
+                    event.getStreamId(), event.getVersion(), this.getVersion().next()));
         }
-    }
-
-    private static ReminderStateBuilder copy(final ReminderState instance) {
-        return builder()
-            .id(instance.getId())
-            .interventionId(instance.getInterventionId())
-            .status(instance.getStatus())
-            .type(instance.getType())
-            .assignee(instance.getAssignee())
-            .country(instance.getCountry())
-            .scheduledTime(instance.getScheduledTime());
     }
 
     public enum ReminderStatus {
