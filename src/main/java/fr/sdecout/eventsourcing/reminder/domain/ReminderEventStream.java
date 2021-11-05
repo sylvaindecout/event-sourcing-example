@@ -1,5 +1,6 @@
 package fr.sdecout.eventsourcing.reminder.domain;
 
+import fr.sdecout.annotations.DomainDrivenDesign;
 import fr.sdecout.eventsourcing.EventStream;
 import lombok.Value;
 
@@ -10,6 +11,7 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 
 @Value
+@DomainDrivenDesign.Aggregate(aggregateRoot = ReminderEventStream.class, members = {ReminderEvent.class})
 public class ReminderEventStream implements EventStream<ReminderEvent, ReminderState> {
 
     private static final ReminderEventStream EMPTY = new ReminderEventStream(emptyList());

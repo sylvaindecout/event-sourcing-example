@@ -1,8 +1,11 @@
 package fr.sdecout.eventsourcing.reminder.domain;
 
+import fr.sdecout.annotations.DomainDrivenDesign;
+
 import java.util.List;
 import java.util.Optional;
 
+@DomainDrivenDesign.Repository(ReminderAggregate.class)
 public interface ReminderEventStore {
 
     /**

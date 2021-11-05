@@ -1,10 +1,12 @@
 package fr.sdecout.eventsourcing;
 
+import fr.sdecout.annotations.DomainDrivenDesign;
 import lombok.Value;
 
 import static java.lang.String.format;
 
 @Value
+@DomainDrivenDesign.ValueObject
 public class StreamRevision {
 
     private static final StreamRevision DEFAULT = new StreamRevision(0);

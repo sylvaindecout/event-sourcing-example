@@ -1,5 +1,6 @@
 package fr.sdecout.eventsourcing.reminder.domain;
 
+import fr.sdecout.annotations.DomainDrivenDesign;
 import fr.sdecout.eventsourcing.Aggregate;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -20,6 +21,7 @@ import static lombok.AccessLevel.PRIVATE;
 @ToString
 @EqualsAndHashCode
 @AllArgsConstructor(access = PRIVATE)
+@DomainDrivenDesign.Aggregate(aggregateRoot = ReminderAggregate.class, members = {ReminderEvent.class})
 public final class ReminderAggregate implements Aggregate<ReminderEvent, ReminderState> {
 
     private final List<? super ReminderEvent> pendingEvents;
@@ -33,7 +35,7 @@ public final class ReminderAggregate implements Aggregate<ReminderEvent, Reminde
     }
 
     static ReminderAggregate scheduleNewReminder(final String reminderId, final String interventionId, final ReminderType reminderType,
-                                                final Country country, final ZonedDateTime scheduledTime, final Clock clock) {
+                                                 final Country country, final ZonedDateTime scheduledTime, final Clock clock) {
         final var aggregate = new ReminderAggregate(emptyEventStream(), clock);
         aggregate.schedule(reminderId, interventionId, reminderType, country, scheduledTime);
         return aggregate;

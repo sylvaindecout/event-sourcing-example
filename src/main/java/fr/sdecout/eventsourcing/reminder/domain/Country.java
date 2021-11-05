@@ -1,5 +1,6 @@
 package fr.sdecout.eventsourcing.reminder.domain;
 
+import fr.sdecout.annotations.DomainDrivenDesign;
 import lombok.Value;
 
 import java.util.regex.Pattern;
@@ -7,6 +8,7 @@ import java.util.regex.Pattern;
 import static com.google.common.base.Preconditions.checkArgument;
 
 @Value
+@DomainDrivenDesign.ValueObject
 public class Country {
 
     private static final Pattern pattern = Pattern.compile("\\p{Alpha}{2}");
