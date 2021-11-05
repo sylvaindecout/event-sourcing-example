@@ -4,6 +4,8 @@ import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
 
+import static com.tngtech.archunit.core.domain.JavaClass.Predicates.resideInAnyPackage;
+import static com.tngtech.archunit.core.domain.JavaClass.Predicates.type;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import static com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.slices;
 
@@ -15,15 +17,13 @@ class ArchitectureTest {
             .that()
             .resideInAPackage("fr.sdecout.reminder.domain..")
             .should()
-            .onlyDependOnClassesThat()
-            .resideInAnyPackage(
-                    "", // Enum inherited methods and Arrays are in the default package :'(
+            .onlyDependOnClassesThat(resideInAnyPackage(
                     "java..",
                     "org.mockito..",
                     "org.assertj..",
                     "fr.sdecout.eventsourcing.reminder.domain..",
                     "fr.sdecout.eventsourcing"
-            )
+            ).or(type(int[].class))) // This is a workaround to https://github.com/TNG/ArchUnit/issues/570
             .as("The domain of the hexagon should be independent of infrastructure and technology")
             .because("business rules evolve at a different rhythm than technology." +
                     " See https://blog.xebia.fr/2016/03/16/perennisez-votre-metier-avec-larchitecture-hexagonale/" +
