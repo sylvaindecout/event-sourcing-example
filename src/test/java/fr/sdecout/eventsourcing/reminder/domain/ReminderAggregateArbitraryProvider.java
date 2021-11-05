@@ -39,13 +39,13 @@ public final class ReminderAggregateArbitraryProvider implements ArbitraryProvid
     }
 
     private static ReminderAggregate initReminder(final String reminderId, final String interventionId, final ReminderState.ReminderStatus status) {
-        final ReminderEvent firstEvent = new ReminderEvent.ReminderScheduled(reminderId, new StreamRevision(1), Instant.now(), interventionId, CALL_CUSTOMER, new Country("IT"), ZonedDateTime.parse("2019-07-17T10:15:30.00Z"));
+        final var firstEvent = new ReminderEvent.ReminderScheduled(reminderId, new StreamRevision(1), Instant.now(), interventionId, CALL_CUSTOMER, new Country("IT"), ZonedDateTime.parse("2019-07-17T10:15:30.00Z"));
         final Optional<? extends ReminderEvent> secondEvent = status == CANCELLED
                 ? Optional.of(new ReminderEvent.ReminderCancelled(reminderId, new StreamRevision(2), Instant.now()))
                 : status == DONE
                 ? Optional.of(new ReminderEvent.ReminderMarkedAsDone(reminderId, new StreamRevision(2), Instant.now()))
                 : Optional.empty();
-        final ReminderEventStream eventStream = secondEvent
+        final var eventStream = secondEvent
                 .map(reminderEvent -> ReminderEventStream.of(firstEvent, reminderEvent))
                 .orElseGet(() -> ReminderEventStream.of(firstEvent));
         return new ReminderAggregate(eventStream, Clock.systemUTC());

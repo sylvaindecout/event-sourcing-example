@@ -41,7 +41,7 @@ class ReminderEventStreamTest {
     void should_set_version_on_replay(@ForAll ReminderEventStream eventStream) {
         final ReminderState state = eventStream.replay();
 
-        final Optional<StreamRevision> versionOfLastEvent = reverseEvents(eventStream).findFirst().map(Event::getVersion);
+        final var versionOfLastEvent = reverseEvents(eventStream).findFirst().map(Event::getVersion);
         assertThat(state.getVersion()).isEqualTo(versionOfLastEvent.orElse(defaultStreamRevision()));
     }
 
@@ -50,7 +50,7 @@ class ReminderEventStreamTest {
     void should_set_reminder_ID_on_replay(@ForAll ReminderEventStream eventStream) {
         final ReminderState state = eventStream.replay();
 
-        final Optional<ReminderEvent.ReminderScheduled> lastReminderScheduledEvent = getLastReminderSchedulingEvent(eventStream);
+        final var lastReminderScheduledEvent = getLastReminderSchedulingEvent(eventStream);
         assertThat(state.getId()).isEqualTo(lastReminderScheduledEvent.map(ReminderEvent::getReminderId).orElse(null));
     }
 
@@ -59,7 +59,7 @@ class ReminderEventStreamTest {
     void should_set_intervention_ID_on_replay(@ForAll ReminderEventStream eventStream) {
         final ReminderState state = eventStream.replay();
 
-        final Optional<ReminderEvent.ReminderScheduled> lastReminderScheduledEvent = getLastReminderSchedulingEvent(eventStream);
+        final var lastReminderScheduledEvent = getLastReminderSchedulingEvent(eventStream);
         assertThat(state.getInterventionId()).isEqualTo(lastReminderScheduledEvent.map(ReminderEvent.ReminderScheduled::getInterventionId).orElse(null));
     }
 
@@ -68,7 +68,7 @@ class ReminderEventStreamTest {
     void should_set_reminder_type_on_replay(@ForAll ReminderEventStream eventStream) {
         final ReminderState state = eventStream.replay();
 
-        final Optional<ReminderEvent.ReminderScheduled> lastReminderScheduledEvent = getLastReminderSchedulingEvent(eventStream);
+        final var lastReminderScheduledEvent = getLastReminderSchedulingEvent(eventStream);
         assertThat(state.getType()).isEqualTo(lastReminderScheduledEvent.map(ReminderEvent.ReminderScheduled::getReminderType).orElse(null));
     }
 

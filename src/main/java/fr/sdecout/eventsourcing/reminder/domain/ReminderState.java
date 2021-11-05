@@ -29,7 +29,7 @@ public final class ReminderState implements State<ReminderEvent> {
 
     public <T extends ReminderEvent> ReminderState apply(final T event) {
         validateVersion(event);
-        final ReminderStateBuilder builder = copy(this)
+        final var builder = copy(this)
             .version(event.getVersion());
         if (event instanceof ReminderEvent.ReminderMarkedAsDone) {
             builder.status(ReminderStatus.DONE);

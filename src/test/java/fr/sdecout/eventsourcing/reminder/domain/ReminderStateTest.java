@@ -31,7 +31,7 @@ class ReminderStateTest {
 
     @Property
     void should_fail_to_apply_unexpected_event(@ForAll ReminderState formerState) {
-        final ReminderEvent event = mock(ReminderEvent.class);
+        final var event = mock(ReminderEvent.class);
         given(event.getVersion()).willReturn(formerState.getVersion().next());
 
         assertThatIllegalArgumentException()
@@ -41,7 +41,7 @@ class ReminderStateTest {
 
     @Property
     void should_apply_ReminderMarkedAsDone_event(@ForAll ReminderState formerState, @ForAll String reminderId, @ForAll Instant timestamp) {
-        final ReminderEvent event = new ReminderEvent.ReminderMarkedAsDone(reminderId, formerState.getVersion().next(), timestamp);
+        final var event = new ReminderEvent.ReminderMarkedAsDone(reminderId, formerState.getVersion().next(), timestamp);
 
         final ReminderState updatedState = formerState.apply(event);
 
@@ -60,7 +60,7 @@ class ReminderStateTest {
     @Property
     void should_apply_ReminderScheduled_event(@ForAll ReminderState formerState, @ForAll String reminderId, @ForAll Instant timestamp,
                                           @ForAll String interventionId, @ForAll ReminderType reminderType, @ForAll Country country, @ForAll ZonedDateTime scheduledTime) {
-        final ReminderEvent.ReminderScheduled event = new ReminderEvent.ReminderScheduled(reminderId, formerState.getVersion().next(), timestamp, interventionId, reminderType, country, scheduledTime);
+        final var event = new ReminderEvent.ReminderScheduled(reminderId, formerState.getVersion().next(), timestamp, interventionId, reminderType, country, scheduledTime);
 
         final ReminderState updatedState = formerState.apply(event);
 
@@ -79,7 +79,7 @@ class ReminderStateTest {
     @Property
     void should_apply_ReminderRescheduled_event(@ForAll ReminderState formerState, @ForAll String reminderId,
                                             @ForAll Instant timestamp, @ForAll ZonedDateTime scheduledTime) {
-        final ReminderEvent event = new ReminderEvent.ReminderRescheduled(reminderId, formerState.getVersion().next(), timestamp, scheduledTime);
+        final var event = new ReminderEvent.ReminderRescheduled(reminderId, formerState.getVersion().next(), timestamp, scheduledTime);
 
         final ReminderState updatedState = formerState.apply(event);
 
@@ -97,7 +97,7 @@ class ReminderStateTest {
 
     @Property
     void should_apply_ReminderReopened_event(@ForAll ReminderState formerState, @ForAll String reminderId, @ForAll Instant timestamp) {
-        final ReminderEvent event = new ReminderEvent.ReminderReopened(reminderId, formerState.getVersion().next(), timestamp);
+        final var event = new ReminderEvent.ReminderReopened(reminderId, formerState.getVersion().next(), timestamp);
 
         final ReminderState updatedState = formerState.apply(event);
 
@@ -116,7 +116,7 @@ class ReminderStateTest {
     @Property
     void should_apply_ReminderAssigned_event(@ForAll ReminderState formerState, @ForAll String reminderId,
                                          @ForAll Instant timestamp, @ForAll String assignee) {
-        final ReminderEvent.ReminderAssigned event = new ReminderEvent.ReminderAssigned(reminderId, formerState.getVersion().next(), timestamp, assignee);
+        final var event = new ReminderEvent.ReminderAssigned(reminderId, formerState.getVersion().next(), timestamp, assignee);
 
         final ReminderState updatedState = formerState.apply(event);
 
@@ -135,7 +135,7 @@ class ReminderStateTest {
     @Property
     void should_apply_ReminderUnassigned_event(@ForAll ReminderState formerState, @ForAll String reminderId,
                                              @ForAll Instant timestamp) {
-        final ReminderEvent.ReminderUnassigned event = new ReminderEvent.ReminderUnassigned(reminderId, formerState.getVersion().next(), timestamp);
+        final var event = new ReminderEvent.ReminderUnassigned(reminderId, formerState.getVersion().next(), timestamp);
 
         final ReminderState updatedState = formerState.apply(event);
 
@@ -154,7 +154,7 @@ class ReminderStateTest {
     @Property
     void should_apply_ReminderTransferred_event(@ForAll ReminderState formerState, @ForAll String reminderId,
                                             @ForAll Instant timestamp, @ForAll Country country) {
-        final ReminderEvent.ReminderTransferred event = new ReminderEvent.ReminderTransferred(reminderId, formerState.getVersion().next(), timestamp, country);
+        final var event = new ReminderEvent.ReminderTransferred(reminderId, formerState.getVersion().next(), timestamp, country);
 
         final ReminderState updatedState = formerState.apply(event);
 
@@ -172,7 +172,7 @@ class ReminderStateTest {
 
     @Property
     void should_apply_ReminderCancelled_event(@ForAll ReminderState formerState, @ForAll String reminderId, @ForAll Instant timestamp) {
-        final ReminderEvent event = new ReminderEvent.ReminderCancelled(reminderId, formerState.getVersion().next(), timestamp);
+        final var event = new ReminderEvent.ReminderCancelled(reminderId, formerState.getVersion().next(), timestamp);
 
         final ReminderState updatedState = formerState.apply(event);
 

@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 
 import java.time.Clock;
 import java.time.ZonedDateTime;
-import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -23,8 +22,8 @@ public final class CommandHandler {
     private final Clock clock;
 
     public ReminderState schedule(final ReminderType reminderType, final String interventionId, final ZonedDateTime scheduledTime) {
-        final String reminderId = idGenerator.generate();
-        final ReminderAggregate aggregate = handleFirstCommand(reminderId, () -> ReminderAggregate.scheduleNewReminder(reminderId, interventionId, reminderType, DEFAULT_COUNTRY, scheduledTime, clock));
+        final var reminderId = idGenerator.generate();
+        final var aggregate = handleFirstCommand(reminderId, () -> ReminderAggregate.scheduleNewReminder(reminderId, interventionId, reminderType, DEFAULT_COUNTRY, scheduledTime, clock));
         return aggregate.getState();
     }
 
@@ -57,25 +56,20 @@ public final class CommandHandler {
     }
 
     private ReminderAggregate handleFirstCommand(final String reminderId, final Supplier<ReminderAggregate> decide) {
-        final Optional<ReminderAggregate> aggregate = eventStore.find(reminderId);
+        final var aggregate = eventStore.find(reminderId);
         if (aggregate.isPresent()) {
             throw new IllegalStateException("Unexpected command: reminder ID is already present");
-        } else {
-            final ReminderAggregate updatedAggregate = decide.get();
-            eventStore.save(updatedAggregate);
-            return updatedAggregate;
         }
+        final var updatedAggregate = decide.get();
+        eventStore.save(updatedAggregate);
+        return updatedAggregate;
     }
 
     private void handle(final String reminderId, final Consumer<ReminderAggregate> decide) {
-        final Optional<ReminderAggregate> aggregate = eventStore.find(reminderId);
-        if (aggregate.isPresent()) {
-            final ReminderAggregate reminderAggregate = aggregate.get();
-            decide.accept(reminderAggregate);
-            eventStore.save(reminderAggregate);
-        } else {
-            throw new IllegalStateException("Unexpected command: reminder ID does not exist");
-        }
+        final var aggregate = eventStore.find(reminderId)
+                .orElseThrow(() -> new IllegalStateException("Unexpected command: reminder ID does not exist"));
+        decide.accept(aggregate);
+        eventStore.save(aggregate);
     }
 
 }

@@ -7,8 +7,7 @@ import net.jqwik.api.providers.TypeUsage;
 import java.util.Set;
 
 import static java.util.Collections.singleton;
-import static net.jqwik.api.Arbitraries.*;
-import static net.jqwik.api.Combinators.withBuilder;
+import static net.jqwik.api.Arbitraries.strings;
 
 public class CountryArbitraryProvider implements ArbitraryProvider {
 

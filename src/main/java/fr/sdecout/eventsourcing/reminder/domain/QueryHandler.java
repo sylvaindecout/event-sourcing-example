@@ -13,13 +13,13 @@ public final class QueryHandler {
 
     private final ReminderEventStore eventStore;
 
-    public Optional<ReminderState> getReminder(@NonNull final String interventionId, @NonNull final String reminderId){
+    public Optional<ReminderState> getReminder(@NonNull final String interventionId, @NonNull final String reminderId) {
         return eventStore.find(reminderId)
-            .filter(reminderAggregate -> interventionId.equals(reminderAggregate.getState().getInterventionId()))
+                .filter(reminderAggregate -> interventionId.equals(reminderAggregate.getState().getInterventionId()))
                 .map(ReminderAggregate::getState);
     }
 
-    public List<ReminderState> getReminders(@NonNull final String interventionId){
+    public List<ReminderState> getReminders(@NonNull final String interventionId) {
         return eventStore.findByIntervention(interventionId).stream()
                 .map(ReminderAggregate::getState)
                 .collect(toList());

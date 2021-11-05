@@ -36,7 +36,7 @@ class ReminderAggregateTest {
     //FIXME: !!!
     @Example
     void should_initialize_state_from_input_event_stream() {
-        final ReminderEventStream eventStream = ReminderEventStream.of(
+        final var eventStream = ReminderEventStream.of(
                 new ReminderEvent.ReminderScheduled("REMINDER2", new StreamRevision(1), TIMESTAMP_1, "INTERVENTION1", CALL_CUSTOMER, new Country("IT"), SCHEDULED_DATE_1),
                 new ReminderEvent.ReminderCancelled("REMINDER3", new StreamRevision(2), TIMESTAMP_2)
         );
@@ -79,7 +79,7 @@ class ReminderAggregateTest {
     @Property
     void should_reschedule_reminder_with_pending_status(@ForAll("pendingReminder") ReminderAggregate aggregate,
                                                     @ForAll ZonedDateTime scheduledTime) {
-        final StreamRevision formerVersion = aggregate.getState().getVersion();
+        final var formerVersion = aggregate.getState().getVersion();
 
         aggregate.reschedule(scheduledTime);
 
@@ -99,7 +99,7 @@ class ReminderAggregateTest {
     @Property
     void should_assign_reminder_with_pending_status(@ForAll("pendingReminder") ReminderAggregate aggregate,
                                                 @ForAll String assignee) {
-        final StreamRevision formerVersion = aggregate.getState().getVersion();
+        final var formerVersion = aggregate.getState().getVersion();
 
         aggregate.assignTo(assignee);
 
@@ -121,7 +121,7 @@ class ReminderAggregateTest {
 
     @Property
     void should_unassign_reminder_with_pending_status(@ForAll("pendingReminder") ReminderAggregate aggregate) {
-        final StreamRevision formerVersion = aggregate.getState().getVersion();
+        final var formerVersion = aggregate.getState().getVersion();
 
         aggregate.unassign();
 
@@ -140,7 +140,7 @@ class ReminderAggregateTest {
     @Property
     void should_transfer_reminder_with_pending_status(@ForAll("pendingReminder") ReminderAggregate aggregate,
                                                   @ForAll Country country) {
-        final StreamRevision formerVersion = aggregate.getState().getVersion();
+        final var formerVersion = aggregate.getState().getVersion();
 
         aggregate.transferTo(country);
 
@@ -164,7 +164,7 @@ class ReminderAggregateTest {
 
     @Property
     void should_mark_reminder_with_pending_status_as_done(@ForAll("pendingReminder") ReminderAggregate aggregate) {
-        final StreamRevision formerVersion = aggregate.getState().getVersion();
+        final var formerVersion = aggregate.getState().getVersion();
 
         aggregate.markAsDone();
 
@@ -192,7 +192,7 @@ class ReminderAggregateTest {
 
     @Property
     void should_reopen_reminder_with_status_other_than_pending(@ForAll("cancelledReminder") ReminderAggregate aggregate) {
-        final StreamRevision formerVersion = aggregate.getState().getVersion();
+        final var formerVersion = aggregate.getState().getVersion();
 
         aggregate.reopen();
 
@@ -213,7 +213,7 @@ class ReminderAggregateTest {
 
     @Property
     void should_cancel_reminder_with_pending_status(@ForAll("pendingReminder") ReminderAggregate aggregate) {
-        final StreamRevision formerVersion = aggregate.getState().getVersion();
+        final var formerVersion = aggregate.getState().getVersion();
 
         aggregate.cancel();
 

@@ -34,7 +34,7 @@ public final class ReminderAggregate implements Aggregate<ReminderEvent, Reminde
 
     static ReminderAggregate scheduleNewReminder(final String reminderId, final String interventionId, final ReminderType reminderType,
                                                 final Country country, final ZonedDateTime scheduledTime, final Clock clock) {
-        final ReminderAggregate aggregate = new ReminderAggregate(emptyEventStream(), clock);
+        final var aggregate = new ReminderAggregate(emptyEventStream(), clock);
         aggregate.schedule(reminderId, interventionId, reminderType, country, scheduledTime);
         return aggregate;
     }
