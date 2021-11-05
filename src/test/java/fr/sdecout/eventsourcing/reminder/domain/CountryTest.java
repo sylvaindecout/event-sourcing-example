@@ -1,5 +1,6 @@
 package fr.sdecout.eventsourcing.reminder.domain;
 
+import net.jqwik.api.Example;
 import net.jqwik.api.ForAll;
 import net.jqwik.api.Property;
 import net.jqwik.api.constraints.AlphaChars;
@@ -20,7 +21,7 @@ class CountryTest {
         assertThat(new Country(code).getCode()).isEqualTo(code.toUpperCase());
     }
 
-    @Property
+    @Example
     void should_fail_to_initialize_from_null_code() {
         assertThatNullPointerException()
                 .isThrownBy(() -> new Country(null));

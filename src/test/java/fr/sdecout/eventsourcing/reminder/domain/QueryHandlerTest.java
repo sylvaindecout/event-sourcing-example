@@ -1,6 +1,7 @@
 package fr.sdecout.eventsourcing.reminder.domain;
 
 import net.jqwik.api.Assume;
+import net.jqwik.api.Example;
 import net.jqwik.api.ForAll;
 import net.jqwik.api.Property;
 
@@ -18,7 +19,7 @@ class QueryHandlerTest {
     private final ReminderEventStore eventStore = mock(ReminderEventStore.class);
     private final QueryHandler queryHandler = new QueryHandler(eventStore);
 
-    @Property
+    @Example
     void should_fail_to_fetch_reminders_for_null_intervention_ID() {
         assertThatNullPointerException()
             .isThrownBy(() -> queryHandler.getReminders(null));

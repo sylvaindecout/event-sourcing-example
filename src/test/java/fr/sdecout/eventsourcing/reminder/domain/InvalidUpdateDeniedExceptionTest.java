@@ -1,5 +1,6 @@
 package fr.sdecout.eventsourcing.reminder.domain;
 
+import net.jqwik.api.Example;
 import net.jqwik.api.ForAll;
 import net.jqwik.api.Property;
 
@@ -13,7 +14,7 @@ class InvalidUpdateDeniedExceptionTest {
             .isEqualTo("Update denied for reminder '%s' (status: '%s'): %s", id, status, message);
     }
 
-    @Property
+    @Example
     void should_initialize_message_with_all_null_arguments() {
         assertThat(new InvalidUpdateDeniedException(null, null, null).getMessage())
             .isEqualTo("Update denied for reminder 'null' (status: 'null'): null");

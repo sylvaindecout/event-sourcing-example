@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class ReminderEventStreamTest {
 
-    @Property
+    @Example
     void should_expose_empty_event_stream() {
         assertThat(ReminderEventStream.emptyEventStream().isEmpty()).isTrue();
     }

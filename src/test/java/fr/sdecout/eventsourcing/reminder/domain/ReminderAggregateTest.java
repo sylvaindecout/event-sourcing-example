@@ -11,9 +11,7 @@ import static fr.sdecout.eventsourcing.StreamRevision.defaultStreamRevision;
 import static fr.sdecout.eventsourcing.reminder.domain.ReminderState.ReminderStatus.*;
 import static fr.sdecout.eventsourcing.reminder.domain.ReminderType.CALL_CUSTOMER;
 import static java.time.ZoneId.systemDefault;
-import static net.jqwik.api.Arbitraries.defaultFor;
-import static net.jqwik.api.Arbitraries.of;
-import static net.jqwik.api.Arbitraries.strings;
+import static net.jqwik.api.Arbitraries.*;
 import static net.jqwik.api.Combinators.combine;
 import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
@@ -27,7 +25,7 @@ class ReminderAggregateTest {
 
     private final Clock clock = Clock.fixed(NOW, systemDefault());
 
-    @Property
+    @Example
     void should_fail_to_initialize_state_from_null_event_stream() {
         assertThatNullPointerException()
                 .isThrownBy(() -> new ReminderAggregate(null, clock));

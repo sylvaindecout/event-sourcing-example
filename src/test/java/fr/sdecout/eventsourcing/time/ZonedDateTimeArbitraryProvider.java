@@ -11,7 +11,6 @@ import java.time.ZonedDateTime;
 import java.util.Set;
 
 import static java.util.Collections.singleton;
-import static net.jqwik.api.Arbitraries.defaultFor;
 import static net.jqwik.api.Combinators.combine;
 
 public final class ZonedDateTimeArbitraryProvider implements ArbitraryProvider {

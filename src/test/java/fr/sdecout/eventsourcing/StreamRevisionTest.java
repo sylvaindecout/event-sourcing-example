@@ -1,5 +1,6 @@
 package fr.sdecout.eventsourcing;
 
+import net.jqwik.api.Example;
 import net.jqwik.api.ForAll;
 import net.jqwik.api.Property;
 
@@ -31,7 +32,7 @@ class StreamRevisionTest {
         assertThat(revision.isNext(revision)).isFalse();
     }
 
-    @Property
+    @Example
     void should_set_default_revision_to_0() {
         assertThat(defaultStreamRevision().getValue()).isZero();
     }
