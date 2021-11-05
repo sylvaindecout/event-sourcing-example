@@ -2,6 +2,12 @@
 
 [![Tests](https://github.com/sylvaindecout/event-sourcing-example/actions/workflows/maven.yml/badge.svg?branch=master)](https://github.com/sylvaindecout/event-sourcing-example/actions/workflows/maven.yml) [![Gitmoji](https://img.shields.io/badge/gitmoji-%20%F0%9F%98%9C%20%F0%9F%98%8D-FFDD67.svg)](https://gitmoji.dev)
 
+## Usage
+
+Run tests: `mvn clean test`
+
+Run mutation coverage: `mvn org.pitest:pitest-maven:mutationCoverage`
+
 ## Use case
 A business has to manage **interventions**.
 
