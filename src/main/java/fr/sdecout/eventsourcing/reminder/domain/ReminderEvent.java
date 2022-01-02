@@ -2,80 +2,106 @@ package fr.sdecout.eventsourcing.reminder.domain;
 
 import fr.sdecout.eventsourcing.Event;
 import fr.sdecout.eventsourcing.StreamRevision;
-import lombok.NonNull;
-import lombok.Value;
 
 import java.time.Instant;
 import java.time.ZonedDateTime;
 
+import static java.util.Objects.requireNonNull;
+
 public interface ReminderEvent extends Event {
 
-    String getReminderId();
+    String reminderId();
 
-    default String getStreamId() {
-        return this.getReminderId();
+    default String streamId() {
+        return this.reminderId();
     }
 
-    @Value
-    class ReminderMarkedAsDone implements ReminderEvent {
-        @NonNull String reminderId;
-        @NonNull StreamRevision version;
-        @NonNull Instant timestamp;
+    record ReminderMarkedAsDone(String reminderId,
+                                StreamRevision version,
+                                Instant timestamp) implements ReminderEvent {
+        public ReminderMarkedAsDone {
+            requireNonNull(reminderId);
+            requireNonNull(version);
+            requireNonNull(timestamp);
+        }
     }
 
-    @Value
-    class ReminderScheduled implements ReminderEvent {
-        @NonNull String reminderId;
-        @NonNull StreamRevision version;
-        @NonNull Instant timestamp;
-        @NonNull String interventionId;
-        @NonNull ReminderType reminderType;
-        @NonNull Country country;
-        @NonNull ZonedDateTime scheduledTime;
+    record ReminderScheduled(String reminderId, StreamRevision version,
+                             Instant timestamp, String interventionId,
+                             ReminderType reminderType,
+                             Country country,
+                             ZonedDateTime scheduledTime) implements ReminderEvent {
+        public ReminderScheduled {
+            requireNonNull(reminderId);
+            requireNonNull(version);
+            requireNonNull(timestamp);
+            requireNonNull(interventionId);
+            requireNonNull(reminderType);
+            requireNonNull(country);
+            requireNonNull(scheduledTime);
+        }
     }
 
-    @Value
-    class ReminderRescheduled implements ReminderEvent {
-        @NonNull String reminderId;
-        @NonNull StreamRevision version;
-        @NonNull Instant timestamp;
-        @NonNull ZonedDateTime scheduledTime;
+    record ReminderRescheduled(String reminderId,
+                               StreamRevision version,
+                               Instant timestamp,
+                               ZonedDateTime scheduledTime) implements ReminderEvent {
+        public ReminderRescheduled {
+            requireNonNull(reminderId);
+            requireNonNull(version);
+            requireNonNull(timestamp);
+            requireNonNull(scheduledTime);
+        }
     }
 
-    @Value
-    class ReminderReopened implements ReminderEvent {
-        @NonNull String reminderId;
-        @NonNull StreamRevision version;
-        @NonNull Instant timestamp;
+    record ReminderReopened(String reminderId, StreamRevision version,
+                            Instant timestamp) implements ReminderEvent {
+        public ReminderReopened {
+            requireNonNull(reminderId);
+            requireNonNull(version);
+            requireNonNull(timestamp);
+        }
     }
 
-    @Value
-    class ReminderAssigned implements ReminderEvent {
-        @NonNull String reminderId;
-        @NonNull StreamRevision version;
-        @NonNull Instant timestamp;
-        @NonNull String assignee;
+    record ReminderAssigned(String reminderId, StreamRevision version,
+                            Instant timestamp,
+                            String assignee) implements ReminderEvent {
+        public ReminderAssigned {
+            requireNonNull(reminderId);
+            requireNonNull(version);
+            requireNonNull(timestamp);
+            requireNonNull(assignee);
+        }
     }
 
-    @Value
-    class ReminderUnassigned implements ReminderEvent {
-        @NonNull String reminderId;
-        @NonNull StreamRevision version;
-        @NonNull Instant timestamp;
+    record ReminderUnassigned(String reminderId,
+                              StreamRevision version,
+                              Instant timestamp) implements ReminderEvent {
+        public ReminderUnassigned {
+            requireNonNull(reminderId);
+            requireNonNull(version);
+            requireNonNull(timestamp);
+        }
     }
 
-    @Value
-    class ReminderTransferred implements ReminderEvent {
-        @NonNull String reminderId;
-        @NonNull StreamRevision version;
-        @NonNull Instant timestamp;
-        @NonNull Country country;
+    record ReminderTransferred(String reminderId,
+                               StreamRevision version,
+                               Instant timestamp,
+                               Country country) implements ReminderEvent {
+        public ReminderTransferred {
+            requireNonNull(reminderId);
+            requireNonNull(version);
+            requireNonNull(timestamp);
+            requireNonNull(country);
+        }
     }
 
-    @Value
-    class ReminderCancelled implements ReminderEvent {
-        @NonNull String reminderId;
-        @NonNull StreamRevision version;
-        @NonNull Instant timestamp;
+    record ReminderCancelled(String reminderId, StreamRevision version,
+                             Instant timestamp) implements ReminderEvent {
+        public ReminderCancelled {
+            requireNonNull(reminderId);
+            requireNonNull(version);
+            requireNonNull(timestamp);
+        }
     }
 }

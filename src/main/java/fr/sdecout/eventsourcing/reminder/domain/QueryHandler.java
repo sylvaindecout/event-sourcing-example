@@ -1,27 +1,31 @@
 package fr.sdecout.eventsourcing.reminder.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.NonNull;
-
 import java.util.List;
 import java.util.Optional;
 
+import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
 
-@AllArgsConstructor
 public final class QueryHandler {
 
     private final ReminderEventStore eventStore;
 
-    public Optional<ReminderState> getReminder(@NonNull final String interventionId, @NonNull final String reminderId) {
-        return eventStore.find(reminderId)
-                .filter(reminderAggregate -> interventionId.equals(reminderAggregate.getState().getInterventionId()))
-                .map(ReminderAggregate::getState);
+    public QueryHandler(final ReminderEventStore eventStore) {
+        this.eventStore = eventStore;
     }
 
-    public List<ReminderState> getReminders(@NonNull final String interventionId) {
+    public Optional<ReminderState> getReminder(final String interventionId, final String reminderId) {
+        requireNonNull(interventionId);
+        requireNonNull(reminderId);
+        return eventStore.find(reminderId)
+                .filter(reminderAggregate -> interventionId.equals(reminderAggregate.state().interventionId()))
+                .map(ReminderAggregate::state);
+    }
+
+    public List<ReminderState> getReminders(final String interventionId) {
+        requireNonNull(interventionId);
         return eventStore.findByIntervention(interventionId).stream()
-                .map(ReminderAggregate::getState)
+                .map(ReminderAggregate::state)
                 .collect(toList());
     }
 

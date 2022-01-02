@@ -11,7 +11,8 @@ import static fr.sdecout.eventsourcing.StreamRevision.defaultStreamRevision;
 import static fr.sdecout.eventsourcing.reminder.domain.ReminderState.ReminderStatus.*;
 import static fr.sdecout.eventsourcing.reminder.domain.ReminderType.CALL_CUSTOMER;
 import static java.time.ZoneId.systemDefault;
-import static net.jqwik.api.Arbitraries.*;
+import static net.jqwik.api.Arbitraries.defaultFor;
+import static net.jqwik.api.Arbitraries.strings;
 import static net.jqwik.api.Combinators.combine;
 import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
@@ -41,7 +42,7 @@ class ReminderAggregateTest {
 
         final ReminderAggregate aggregate = new ReminderAggregate(eventStream, clock);
 
-        assertThat(aggregate.getState()).isEqualTo(ReminderState.builder()
+        assertThat(aggregate.state()).isEqualTo(ReminderState.builder()
                 .version(new StreamRevision(2))
                 .id("REMINDER2")
                 .interventionId("INTERVENTION1")
@@ -54,15 +55,15 @@ class ReminderAggregateTest {
 
     @Property
     void should_schedule_new_reminder(@ForAll String reminderId, @ForAll String interventionId, @ForAll ReminderType reminderType,
-                                  @ForAll Country country, @ForAll ZonedDateTime scheduledTime) {
+                                      @ForAll Country country, @ForAll ZonedDateTime scheduledTime) {
         final ReminderAggregate aggregate = ReminderAggregate.scheduleNewReminder(reminderId, interventionId, reminderType, country, scheduledTime, clock);
 
         assertSoftly(softly -> {
-            softly.assertThat(aggregate.getClock()).isEqualTo(clock);
-            softly.assertThat(aggregate.getPendingEvents()).containsExactly(
+            softly.assertThat(aggregate.clock()).isEqualTo(clock);
+            softly.assertThat(aggregate.pendingEvents()).containsExactly(
                     new ReminderEvent.ReminderScheduled(reminderId, defaultStreamRevision().next(), NOW, interventionId, reminderType, country, scheduledTime)
             );
-            softly.assertThat(aggregate.getState()).isEqualTo(ReminderState.builder()
+            softly.assertThat(aggregate.state()).isEqualTo(ReminderState.builder()
                     .version(defaultStreamRevision().next())
                     .id(reminderId)
                     .interventionId(interventionId)
@@ -76,55 +77,55 @@ class ReminderAggregateTest {
 
     @Property
     void should_reschedule_reminder_with_pending_status(@ForAll("pendingReminder") ReminderAggregate aggregate,
-                                                    @ForAll ZonedDateTime scheduledTime) {
-        final var formerVersion = aggregate.getState().getVersion();
+                                                        @ForAll ZonedDateTime scheduledTime) {
+        final var formerVersion = aggregate.state().version();
 
         aggregate.reschedule(scheduledTime);
 
-        assertThat(aggregate.getPendingEvents()).containsExactly(
-                new ReminderEvent.ReminderRescheduled(aggregate.getState().getId(), formerVersion.next(), NOW, scheduledTime)
+        assertThat(aggregate.pendingEvents()).containsExactly(
+                new ReminderEvent.ReminderRescheduled(aggregate.state().id(), formerVersion.next(), NOW, scheduledTime)
         );
     }
 
     @Property
     void should_fail_to_reschedule_reminder_with_status_other_than_pending(@ForAll("cancelledReminder") ReminderAggregate aggregate,
-                                                                       @ForAll ZonedDateTime scheduledTime) {
+                                                                           @ForAll ZonedDateTime scheduledTime) {
         assertThatExceptionOfType(InvalidUpdateDeniedException.class)
                 .isThrownBy(() -> aggregate.reschedule(scheduledTime))
-                .withMessage("Update denied for reminder '%s' (status: 'CANCELLED'): reschedule to %s", aggregate.getState().getId(), scheduledTime);
+                .withMessage("Update denied for reminder '%s' (status: 'CANCELLED'): reschedule to %s", aggregate.state().id(), scheduledTime);
     }
 
     @Property
     void should_assign_reminder_with_pending_status(@ForAll("pendingReminder") ReminderAggregate aggregate,
-                                                @ForAll String assignee) {
-        final var formerVersion = aggregate.getState().getVersion();
+                                                    @ForAll String assignee) {
+        final var formerVersion = aggregate.state().version();
 
         aggregate.assignTo(assignee);
 
         assertSoftly(softly -> {
-            softly.assertThat(aggregate.getPendingEvents()).containsExactly(
-                    new ReminderEvent.ReminderAssigned(aggregate.getState().getId(), formerVersion.next(), NOW, assignee)
+            softly.assertThat(aggregate.pendingEvents()).containsExactly(
+                    new ReminderEvent.ReminderAssigned(aggregate.state().id(), formerVersion.next(), NOW, assignee)
             );
-            softly.assertThat(aggregate.getState().getAssignee()).isEqualTo(assignee);
+            softly.assertThat(aggregate.state().assignee()).isEqualTo(assignee);
         });
     }
 
     @Property
     void should_fail_to_assign_reminder_with_status_other_than_pending(@ForAll("cancelledReminder") ReminderAggregate aggregate,
-                                                                   @ForAll String assignee) {
+                                                                       @ForAll String assignee) {
         assertThatExceptionOfType(InvalidUpdateDeniedException.class)
                 .isThrownBy(() -> aggregate.assignTo(assignee))
-                .withMessage("Update denied for reminder '%s' (status: 'CANCELLED'): assign to %s", aggregate.getState().getId(), assignee);
+                .withMessage("Update denied for reminder '%s' (status: 'CANCELLED'): assign to %s", aggregate.state().id(), assignee);
     }
 
     @Property
     void should_unassign_reminder_with_pending_status(@ForAll("pendingReminder") ReminderAggregate aggregate) {
-        final var formerVersion = aggregate.getState().getVersion();
+        final var formerVersion = aggregate.state().version();
 
         aggregate.unassign();
 
-        assertThat(aggregate.getPendingEvents()).containsExactly(
-                new ReminderEvent.ReminderUnassigned(aggregate.getState().getId(), formerVersion.next(), NOW)
+        assertThat(aggregate.pendingEvents()).containsExactly(
+                new ReminderEvent.ReminderUnassigned(aggregate.state().id(), formerVersion.next(), NOW)
         );
     }
 
@@ -132,45 +133,45 @@ class ReminderAggregateTest {
     void should_fail_to_unassign_reminder_with_status_other_than_pending(@ForAll("cancelledReminder") ReminderAggregate aggregate) {
         assertThatExceptionOfType(InvalidUpdateDeniedException.class)
                 .isThrownBy(() -> aggregate.unassign())
-                .withMessage("Update denied for reminder '%s' (status: 'CANCELLED'): unassign", aggregate.getState().getId());
+                .withMessage("Update denied for reminder '%s' (status: 'CANCELLED'): unassign", aggregate.state().id());
     }
 
     @Property
     void should_transfer_reminder_with_pending_status(@ForAll("pendingReminder") ReminderAggregate aggregate,
-                                                  @ForAll Country country) {
-        final var formerVersion = aggregate.getState().getVersion();
+                                                      @ForAll Country country) {
+        final var formerVersion = aggregate.state().version();
 
         aggregate.transferTo(country);
 
         assertSoftly(softly -> {
-            softly.assertThat(aggregate.getPendingEvents()).containsExactly(
-                    new ReminderEvent.ReminderUnassigned(aggregate.getState().getId(), formerVersion.next(), NOW),
-                    new ReminderEvent.ReminderTransferred(aggregate.getState().getId(), formerVersion.next().next(), NOW, country)
+            softly.assertThat(aggregate.pendingEvents()).containsExactly(
+                    new ReminderEvent.ReminderUnassigned(aggregate.state().id(), formerVersion.next(), NOW),
+                    new ReminderEvent.ReminderTransferred(aggregate.state().id(), formerVersion.next().next(), NOW, country)
             );
-            softly.assertThat(aggregate.getState().getCountry()).isEqualTo(country);
-            softly.assertThat(aggregate.getState().getAssignee()).isNull();
+            softly.assertThat(aggregate.state().country()).isEqualTo(country);
+            softly.assertThat(aggregate.state().assignee()).isNull();
         });
     }
 
     @Property
     void should_fail_to_transfer_reminder_with_status_other_than_pending(@ForAll("cancelledReminder") ReminderAggregate aggregate,
-                                                                     @ForAll Country country) {
+                                                                         @ForAll Country country) {
         assertThatExceptionOfType(InvalidUpdateDeniedException.class)
                 .isThrownBy(() -> aggregate.transferTo(country))
-                .withMessage("Update denied for reminder '%s' (status: 'CANCELLED'): transfer to %s", aggregate.getState().getId(), country);
+                .withMessage("Update denied for reminder '%s' (status: 'CANCELLED'): transfer to %s", aggregate.state().id(), country);
     }
 
     @Property
     void should_mark_reminder_with_pending_status_as_done(@ForAll("pendingReminder") ReminderAggregate aggregate) {
-        final var formerVersion = aggregate.getState().getVersion();
+        final var formerVersion = aggregate.state().version();
 
         aggregate.markAsDone();
 
         assertSoftly(softly -> {
-            softly.assertThat(aggregate.getPendingEvents()).containsExactly(
-                    new ReminderEvent.ReminderMarkedAsDone(aggregate.getState().getId(), formerVersion.next(), NOW)
+            softly.assertThat(aggregate.pendingEvents()).containsExactly(
+                    new ReminderEvent.ReminderMarkedAsDone(aggregate.state().id(), formerVersion.next(), NOW)
             );
-            softly.assertThat(aggregate.getState().getStatus()).isEqualTo(DONE);
+            softly.assertThat(aggregate.state().status()).isEqualTo(DONE);
         });
     }
 
@@ -178,27 +179,27 @@ class ReminderAggregateTest {
     void should_fail_to_mark_reminder_with_cancelled_status_as_done(@ForAll("cancelledReminder") ReminderAggregate aggregate) {
         assertThatExceptionOfType(InvalidUpdateDeniedException.class)
                 .isThrownBy(aggregate::markAsDone)
-                .withMessage("Update denied for reminder '%s' (status: 'CANCELLED'): mark as done", aggregate.getState().getId());
+                .withMessage("Update denied for reminder '%s' (status: 'CANCELLED'): mark as done", aggregate.state().id());
     }
 
     @Property
     void should_fail_to_mark_reminder_with_done_status_as_done(@ForAll("doneReminder") ReminderAggregate aggregate) {
         aggregate.markAsDone();
 
-        assertThat(aggregate.getPendingEvents()).isEmpty();
+        assertThat(aggregate.pendingEvents()).isEmpty();
     }
 
     @Property
     void should_reopen_reminder_with_status_other_than_pending(@ForAll("cancelledReminder") ReminderAggregate aggregate) {
-        final var formerVersion = aggregate.getState().getVersion();
+        final var formerVersion = aggregate.state().version();
 
         aggregate.reopen();
 
         assertSoftly(softly -> {
-            softly.assertThat(aggregate.getPendingEvents()).containsExactly(
-                    new ReminderEvent.ReminderReopened(aggregate.getState().getId(), formerVersion.next(), NOW)
+            softly.assertThat(aggregate.pendingEvents()).containsExactly(
+                    new ReminderEvent.ReminderReopened(aggregate.state().id(), formerVersion.next(), NOW)
             );
-            softly.assertThat(aggregate.getState().getStatus()).isEqualTo(PENDING);
+            softly.assertThat(aggregate.state().status()).isEqualTo(PENDING);
         });
     }
 
@@ -206,20 +207,20 @@ class ReminderAggregateTest {
     void should_fail_to_reopen_reminder_with_pending_status(@ForAll("pendingReminder") ReminderAggregate aggregate) {
         aggregate.reopen();
 
-        assertThat(aggregate.getPendingEvents()).isEmpty();
+        assertThat(aggregate.pendingEvents()).isEmpty();
     }
 
     @Property
     void should_cancel_reminder_with_pending_status(@ForAll("pendingReminder") ReminderAggregate aggregate) {
-        final var formerVersion = aggregate.getState().getVersion();
+        final var formerVersion = aggregate.state().version();
 
         aggregate.cancel();
 
         assertSoftly(softly -> {
-            softly.assertThat(aggregate.getPendingEvents()).containsExactly(
-                    new ReminderEvent.ReminderCancelled(aggregate.getState().getId(), formerVersion.next(), NOW)
+            softly.assertThat(aggregate.pendingEvents()).containsExactly(
+                    new ReminderEvent.ReminderCancelled(aggregate.state().id(), formerVersion.next(), NOW)
             );
-            softly.assertThat(aggregate.getState().getStatus()).isEqualTo(CANCELLED);
+            softly.assertThat(aggregate.state().status()).isEqualTo(CANCELLED);
         });
     }
 
@@ -227,14 +228,14 @@ class ReminderAggregateTest {
     void should_fail_to_cancel_reminder_with_done_status(@ForAll("doneReminder") ReminderAggregate aggregate) {
         assertThatExceptionOfType(InvalidUpdateDeniedException.class)
                 .isThrownBy(aggregate::cancel)
-                .withMessage("Update denied for reminder '%s' (status: 'DONE'): cancel", aggregate.getState().getId());
+                .withMessage("Update denied for reminder '%s' (status: 'DONE'): cancel", aggregate.state().id());
     }
 
     @Property
     void should_fail_to_cancel_reminder_with_cancelled_status(@ForAll("cancelledReminder") ReminderAggregate aggregate) {
         aggregate.cancel();
 
-        assertThat(aggregate.getPendingEvents()).isEmpty();
+        assertThat(aggregate.pendingEvents()).isEmpty();
     }
 
     private static Arbitrary<ReminderEvent.ReminderScheduled> scheduledReminderEvent() {
@@ -261,7 +262,7 @@ class ReminderAggregateTest {
         return scheduledReminderEvent().map(scheduledEvent ->
                 ReminderEventStream.of(
                         scheduledEvent,
-                        new ReminderEvent.ReminderCancelled(scheduledEvent.getReminderId(), scheduledEvent.getVersion().next(), scheduledEvent.getTimestamp().plusSeconds(1))
+                        new ReminderEvent.ReminderCancelled(scheduledEvent.reminderId(), scheduledEvent.version().next(), scheduledEvent.timestamp().plusSeconds(1))
                 )
         ).map(eventStream -> new ReminderAggregate(eventStream, clock));
     }
@@ -271,7 +272,7 @@ class ReminderAggregateTest {
         return scheduledReminderEvent().map(scheduledEvent ->
                 ReminderEventStream.of(
                         scheduledEvent,
-                        new ReminderEvent.ReminderMarkedAsDone(scheduledEvent.getReminderId(), scheduledEvent.getVersion().next(), scheduledEvent.getTimestamp().plusSeconds(1))
+                        new ReminderEvent.ReminderMarkedAsDone(scheduledEvent.reminderId(), scheduledEvent.version().next(), scheduledEvent.timestamp().plusSeconds(1))
                 )
         ).map(eventStream -> new ReminderAggregate(eventStream, clock));
     }

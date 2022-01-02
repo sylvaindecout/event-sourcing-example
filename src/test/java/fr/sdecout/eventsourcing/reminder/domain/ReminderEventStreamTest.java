@@ -41,8 +41,8 @@ class ReminderEventStreamTest {
     void should_set_version_on_replay(@ForAll ReminderEventStream eventStream) {
         final ReminderState state = eventStream.replay();
 
-        final var versionOfLastEvent = reverseEvents(eventStream).findFirst().map(Event::getVersion);
-        assertThat(state.getVersion()).isEqualTo(versionOfLastEvent.orElse(defaultStreamRevision()));
+        final var versionOfLastEvent = reverseEvents(eventStream).findFirst().map(Event::version);
+        assertThat(state.version()).isEqualTo(versionOfLastEvent.orElse(defaultStreamRevision()));
     }
 
     @Property
@@ -51,7 +51,7 @@ class ReminderEventStreamTest {
         final ReminderState state = eventStream.replay();
 
         final var lastReminderScheduledEvent = getLastReminderSchedulingEvent(eventStream);
-        assertThat(state.getId()).isEqualTo(lastReminderScheduledEvent.map(ReminderEvent::getReminderId).orElse(null));
+        assertThat(state.id()).isEqualTo(lastReminderScheduledEvent.map(ReminderEvent::reminderId).orElse(null));
     }
 
     @Property
@@ -60,7 +60,7 @@ class ReminderEventStreamTest {
         final ReminderState state = eventStream.replay();
 
         final var lastReminderScheduledEvent = getLastReminderSchedulingEvent(eventStream);
-        assertThat(state.getInterventionId()).isEqualTo(lastReminderScheduledEvent.map(ReminderEvent.ReminderScheduled::getInterventionId).orElse(null));
+        assertThat(state.interventionId()).isEqualTo(lastReminderScheduledEvent.map(ReminderEvent.ReminderScheduled::interventionId).orElse(null));
     }
 
     @Property
@@ -69,7 +69,7 @@ class ReminderEventStreamTest {
         final ReminderState state = eventStream.replay();
 
         final var lastReminderScheduledEvent = getLastReminderSchedulingEvent(eventStream);
-        assertThat(state.getType()).isEqualTo(lastReminderScheduledEvent.map(ReminderEvent.ReminderScheduled::getReminderType).orElse(null));
+        assertThat(state.type()).isEqualTo(lastReminderScheduledEvent.map(ReminderEvent.ReminderScheduled::reminderType).orElse(null));
     }
 
     @Property
@@ -77,7 +77,7 @@ class ReminderEventStreamTest {
     void should_set_country_on_replay(@ForAll ReminderEventStream eventStream) {
         final ReminderState state = eventStream.replay();
 
-        assertThat(state.getCountry()).isEqualTo(getLastCountryUpdate(eventStream).orElse(null));
+        assertThat(state.country()).isEqualTo(getLastCountryUpdate(eventStream).orElse(null));
     }
 
     private static Optional<Country> getLastCountryUpdate(@ForAll ReminderEventStream eventStream) {
@@ -85,8 +85,8 @@ class ReminderEventStreamTest {
                 .filter(or(ReminderEvent.ReminderScheduled.class::isInstance, ReminderEvent.ReminderTransferred.class::isInstance))
                 .findFirst()
                 .map(event -> event instanceof ReminderEvent.ReminderScheduled
-                        ? ((ReminderEvent.ReminderScheduled) event).getCountry()
-                        : ((ReminderEvent.ReminderTransferred) event).getCountry());
+                        ? ((ReminderEvent.ReminderScheduled) event).country()
+                        : ((ReminderEvent.ReminderTransferred) event).country());
     }
 
     @Property
@@ -94,7 +94,7 @@ class ReminderEventStreamTest {
     void should_set_assignee_on_replay(@ForAll ReminderEventStream eventStream) {
         final ReminderState state = eventStream.replay();
 
-        assertThat(state.getAssignee()).isEqualTo(getLastAssigneeUpdate(eventStream).orElse(null));
+        assertThat(state.assignee()).isEqualTo(getLastAssigneeUpdate(eventStream).orElse(null));
     }
 
     private static Optional<String> getLastAssigneeUpdate(@ForAll ReminderEventStream eventStream) {
@@ -103,7 +103,7 @@ class ReminderEventStreamTest {
                 .findFirst()
                 .filter(ReminderEvent.ReminderAssigned.class::isInstance)
                 .map(ReminderEvent.ReminderAssigned.class::cast)
-                .map(ReminderEvent.ReminderAssigned::getAssignee);
+                .map(ReminderEvent.ReminderAssigned::assignee);
     }
 
     @Property
@@ -111,7 +111,7 @@ class ReminderEventStreamTest {
     void should_set_scheduled_time_on_replay(@ForAll ReminderEventStream eventStream) {
         final ReminderState state = eventStream.replay();
 
-        assertThat(state.getScheduledTime()).isEqualTo(getLastScheduledTimeUpdate(eventStream).orElse(null));
+        assertThat(state.scheduledTime()).isEqualTo(getLastScheduledTimeUpdate(eventStream).orElse(null));
     }
 
     private static Optional<ZonedDateTime> getLastScheduledTimeUpdate(@ForAll ReminderEventStream eventStream) {
@@ -119,8 +119,8 @@ class ReminderEventStreamTest {
                 .filter(or(ReminderEvent.ReminderScheduled.class::isInstance, ReminderEvent.ReminderRescheduled.class::isInstance))
                 .findFirst()
                 .map(event -> event instanceof ReminderEvent.ReminderScheduled
-                        ? ((ReminderEvent.ReminderScheduled) event).getScheduledTime()
-                        : ((ReminderEvent.ReminderRescheduled) event).getScheduledTime());
+                        ? ((ReminderEvent.ReminderScheduled) event).scheduledTime()
+                        : ((ReminderEvent.ReminderRescheduled) event).scheduledTime());
     }
 
     @Property
@@ -128,7 +128,7 @@ class ReminderEventStreamTest {
     void should_set_status_on_replay(@ForAll ReminderEventStream eventStream) {
         final ReminderState state = eventStream.replay();
 
-        assertThat(state.getStatus()).isEqualTo(getLastStatusUpdate(eventStream).orElse(null));
+        assertThat(state.status()).isEqualTo(getLastStatusUpdate(eventStream).orElse(null));
     }
 
     private Optional<ReminderState.ReminderStatus> getLastStatusUpdate(@ForAll ReminderEventStream eventStream) {
@@ -151,7 +151,7 @@ class ReminderEventStreamTest {
     }
 
     private static Stream<? extends ReminderEvent> reverseEvents(final ReminderEventStream eventStream) {
-        return reverse(eventStream.getEvents().stream());
+        return reverse(eventStream.events().stream());
     }
 
     private static <T> Stream<T> reverse(final Stream<T> input) {

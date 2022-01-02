@@ -6,7 +6,7 @@ import java.time.Instant;
 
 @DomainDrivenDesign.Entity
 public interface Event {
-    String getStreamId();
-    StreamRevision getVersion();
-    Instant getTimestamp();
+    String streamId();
+    StreamRevision version();
+    Instant timestamp();
 }

@@ -13,12 +13,12 @@ class CountryTest {
 
     @Property
     void should_initialize_from_valid_code(@ForAll @StringLength(2) @UpperChars String code) {
-        assertThat(new Country(code).getCode()).isEqualTo(code);
+        assertThat(new Country(code).code()).isEqualTo(code);
     }
 
     @Property
     void should_initialize_from_code_with_lower_case(@ForAll @StringLength(2) @AlphaChars String code) {
-        assertThat(new Country(code).getCode()).isEqualTo(code.toUpperCase());
+        assertThat(new Country(code).code()).isEqualTo(code.toUpperCase());
     }
 
     @Example

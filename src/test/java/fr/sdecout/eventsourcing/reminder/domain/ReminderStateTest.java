@@ -21,18 +21,18 @@ class ReminderStateTest {
 
     @Property
     void should_fail_to_apply_event_with_unexpected_version(@ForAll ReminderState formerState, @ForAll ReminderEvent event) {
-        Assume.that(!event.getVersion().isNext(formerState.getVersion()));
+        Assume.that(!event.version().isNext(formerState.version()));
 
         assertThatIllegalStateException()
                 .isThrownBy(() -> formerState.apply(event))
                 .withMessage("Inconsistent stream revision for stream '%s': %s (expected: %s)",
-                        event.getStreamId(), event.getVersion(), formerState.getVersion().next());
+                        event.streamId(), event.version(), formerState.version().next());
     }
 
     @Property
     void should_fail_to_apply_unexpected_event(@ForAll ReminderState formerState) {
         final var event = mock(ReminderEvent.class);
-        given(event.getVersion()).willReturn(formerState.getVersion().next());
+        given(event.version()).willReturn(formerState.version().next());
 
         assertThatIllegalArgumentException()
                 .isThrownBy(() -> formerState.apply(event))
@@ -41,150 +41,150 @@ class ReminderStateTest {
 
     @Property
     void should_apply_ReminderMarkedAsDone_event(@ForAll ReminderState formerState, @ForAll String reminderId, @ForAll Instant timestamp) {
-        final var event = new ReminderEvent.ReminderMarkedAsDone(reminderId, formerState.getVersion().next(), timestamp);
+        final var event = new ReminderEvent.ReminderMarkedAsDone(reminderId, formerState.version().next(), timestamp);
 
         final ReminderState updatedState = formerState.apply(event);
 
         assertThat(updatedState).isEqualTo(ReminderState.builder()
-                .version(formerState.getVersion().next())
-                .id(formerState.getId())
-                .interventionId(formerState.getInterventionId())
+                .version(formerState.version().next())
+                .id(formerState.id())
+                .interventionId(formerState.interventionId())
                 .status(ReminderState.ReminderStatus.DONE)
-                .type(formerState.getType())
-                .country(formerState.getCountry())
-                .assignee(formerState.getAssignee())
-                .scheduledTime(formerState.getScheduledTime())
+                .type(formerState.type())
+                .country(formerState.country())
+                .assignee(formerState.assignee())
+                .scheduledTime(formerState.scheduledTime())
                 .build());
     }
 
     @Property
     void should_apply_ReminderScheduled_event(@ForAll ReminderState formerState, @ForAll String reminderId, @ForAll Instant timestamp,
-                                          @ForAll String interventionId, @ForAll ReminderType reminderType, @ForAll Country country, @ForAll ZonedDateTime scheduledTime) {
-        final var event = new ReminderEvent.ReminderScheduled(reminderId, formerState.getVersion().next(), timestamp, interventionId, reminderType, country, scheduledTime);
+                                              @ForAll String interventionId, @ForAll ReminderType reminderType, @ForAll Country country, @ForAll ZonedDateTime scheduledTime) {
+        final var event = new ReminderEvent.ReminderScheduled(reminderId, formerState.version().next(), timestamp, interventionId, reminderType, country, scheduledTime);
 
         final ReminderState updatedState = formerState.apply(event);
 
         assertThat(updatedState).isEqualTo(ReminderState.builder()
-                .version(formerState.getVersion().next())
-                .id(event.getReminderId())
-                .interventionId(event.getInterventionId())
+                .version(formerState.version().next())
+                .id(event.reminderId())
+                .interventionId(event.interventionId())
                 .status(ReminderState.ReminderStatus.PENDING)
-                .type(event.getReminderType())
-                .country(event.getCountry())
-                .assignee(formerState.getAssignee())
-                .scheduledTime(event.getScheduledTime())
+                .type(event.reminderType())
+                .country(event.country())
+                .assignee(formerState.assignee())
+                .scheduledTime(event.scheduledTime())
                 .build());
     }
 
     @Property
     void should_apply_ReminderRescheduled_event(@ForAll ReminderState formerState, @ForAll String reminderId,
-                                            @ForAll Instant timestamp, @ForAll ZonedDateTime scheduledTime) {
-        final var event = new ReminderEvent.ReminderRescheduled(reminderId, formerState.getVersion().next(), timestamp, scheduledTime);
+                                                @ForAll Instant timestamp, @ForAll ZonedDateTime scheduledTime) {
+        final var event = new ReminderEvent.ReminderRescheduled(reminderId, formerState.version().next(), timestamp, scheduledTime);
 
         final ReminderState updatedState = formerState.apply(event);
 
         assertThat(updatedState).isEqualTo(ReminderState.builder()
-                .version(formerState.getVersion().next())
-                .id(formerState.getId())
-                .interventionId(formerState.getInterventionId())
-                .status(formerState.getStatus())
-                .type(formerState.getType())
-                .country(formerState.getCountry())
-                .assignee(formerState.getAssignee())
+                .version(formerState.version().next())
+                .id(formerState.id())
+                .interventionId(formerState.interventionId())
+                .status(formerState.status())
+                .type(formerState.type())
+                .country(formerState.country())
+                .assignee(formerState.assignee())
                 .scheduledTime(scheduledTime)
                 .build());
     }
 
     @Property
     void should_apply_ReminderReopened_event(@ForAll ReminderState formerState, @ForAll String reminderId, @ForAll Instant timestamp) {
-        final var event = new ReminderEvent.ReminderReopened(reminderId, formerState.getVersion().next(), timestamp);
+        final var event = new ReminderEvent.ReminderReopened(reminderId, formerState.version().next(), timestamp);
 
         final ReminderState updatedState = formerState.apply(event);
 
         assertThat(updatedState).isEqualTo(ReminderState.builder()
-                .version(formerState.getVersion().next())
-                .id(formerState.getId())
-                .interventionId(formerState.getInterventionId())
+                .version(formerState.version().next())
+                .id(formerState.id())
+                .interventionId(formerState.interventionId())
                 .status(ReminderState.ReminderStatus.PENDING)
-                .type(formerState.getType())
-                .country(formerState.getCountry())
-                .assignee(formerState.getAssignee())
-                .scheduledTime(formerState.getScheduledTime())
+                .type(formerState.type())
+                .country(formerState.country())
+                .assignee(formerState.assignee())
+                .scheduledTime(formerState.scheduledTime())
                 .build());
     }
 
     @Property
     void should_apply_ReminderAssigned_event(@ForAll ReminderState formerState, @ForAll String reminderId,
-                                         @ForAll Instant timestamp, @ForAll String assignee) {
-        final var event = new ReminderEvent.ReminderAssigned(reminderId, formerState.getVersion().next(), timestamp, assignee);
+                                             @ForAll Instant timestamp, @ForAll String assignee) {
+        final var event = new ReminderEvent.ReminderAssigned(reminderId, formerState.version().next(), timestamp, assignee);
 
         final ReminderState updatedState = formerState.apply(event);
 
         assertThat(updatedState).isEqualTo(ReminderState.builder()
-                .version(formerState.getVersion().next())
-                .id(formerState.getId())
-                .interventionId(formerState.getInterventionId())
-                .status(formerState.getStatus())
-                .type(formerState.getType())
-                .country(formerState.getCountry())
-                .assignee(event.getAssignee())
-                .scheduledTime(formerState.getScheduledTime())
+                .version(formerState.version().next())
+                .id(formerState.id())
+                .interventionId(formerState.interventionId())
+                .status(formerState.status())
+                .type(formerState.type())
+                .country(formerState.country())
+                .assignee(event.assignee())
+                .scheduledTime(formerState.scheduledTime())
                 .build());
     }
 
     @Property
     void should_apply_ReminderUnassigned_event(@ForAll ReminderState formerState, @ForAll String reminderId,
-                                             @ForAll Instant timestamp) {
-        final var event = new ReminderEvent.ReminderUnassigned(reminderId, formerState.getVersion().next(), timestamp);
+                                               @ForAll Instant timestamp) {
+        final var event = new ReminderEvent.ReminderUnassigned(reminderId, formerState.version().next(), timestamp);
 
         final ReminderState updatedState = formerState.apply(event);
 
         assertThat(updatedState).isEqualTo(ReminderState.builder()
-                .version(formerState.getVersion().next())
-                .id(formerState.getId())
-                .interventionId(formerState.getInterventionId())
-                .status(formerState.getStatus())
-                .type(formerState.getType())
-                .country(formerState.getCountry())
+                .version(formerState.version().next())
+                .id(formerState.id())
+                .interventionId(formerState.interventionId())
+                .status(formerState.status())
+                .type(formerState.type())
+                .country(formerState.country())
                 .assignee(null)
-                .scheduledTime(formerState.getScheduledTime())
+                .scheduledTime(formerState.scheduledTime())
                 .build());
     }
 
     @Property
     void should_apply_ReminderTransferred_event(@ForAll ReminderState formerState, @ForAll String reminderId,
-                                            @ForAll Instant timestamp, @ForAll Country country) {
-        final var event = new ReminderEvent.ReminderTransferred(reminderId, formerState.getVersion().next(), timestamp, country);
+                                                @ForAll Instant timestamp, @ForAll Country country) {
+        final var event = new ReminderEvent.ReminderTransferred(reminderId, formerState.version().next(), timestamp, country);
 
         final ReminderState updatedState = formerState.apply(event);
 
         assertThat(updatedState).isEqualTo(ReminderState.builder()
-                .version(formerState.getVersion().next())
-                .id(formerState.getId())
-                .interventionId(formerState.getInterventionId())
-                .status(formerState.getStatus())
-                .type(formerState.getType())
-                .country(event.getCountry())
-                .assignee(formerState.getAssignee())
-                .scheduledTime(formerState.getScheduledTime())
+                .version(formerState.version().next())
+                .id(formerState.id())
+                .interventionId(formerState.interventionId())
+                .status(formerState.status())
+                .type(formerState.type())
+                .country(event.country())
+                .assignee(formerState.assignee())
+                .scheduledTime(formerState.scheduledTime())
                 .build());
     }
 
     @Property
     void should_apply_ReminderCancelled_event(@ForAll ReminderState formerState, @ForAll String reminderId, @ForAll Instant timestamp) {
-        final var event = new ReminderEvent.ReminderCancelled(reminderId, formerState.getVersion().next(), timestamp);
+        final var event = new ReminderEvent.ReminderCancelled(reminderId, formerState.version().next(), timestamp);
 
         final ReminderState updatedState = formerState.apply(event);
 
         assertThat(updatedState).isEqualTo(ReminderState.builder()
-                .version(formerState.getVersion().next())
-                .id(formerState.getId())
-                .interventionId(formerState.getInterventionId())
+                .version(formerState.version().next())
+                .id(formerState.id())
+                .interventionId(formerState.interventionId())
                 .status(ReminderState.ReminderStatus.CANCELLED)
-                .type(formerState.getType())
-                .country(formerState.getCountry())
-                .assignee(formerState.getAssignee())
-                .scheduledTime(formerState.getScheduledTime())
+                .type(formerState.type())
+                .country(formerState.country())
+                .assignee(formerState.assignee())
+                .scheduledTime(formerState.scheduledTime())
                 .build());
     }
 

@@ -16,7 +16,6 @@ import static fr.sdecout.eventsourcing.reminder.domain.ReminderState.ReminderSta
 import static fr.sdecout.eventsourcing.reminder.domain.ReminderState.ReminderStatus.DONE;
 import static fr.sdecout.eventsourcing.reminder.domain.ReminderType.CALL_CUSTOMER;
 import static java.util.Collections.singleton;
-import static net.jqwik.api.Arbitraries.of;
 import static net.jqwik.api.Arbitraries.strings;
 import static net.jqwik.api.Combinators.combine;
 

@@ -1,13 +1,10 @@
 package fr.sdecout.eventsourcing.reminder.domain;
 
-import lombok.AllArgsConstructor;
-
 import java.time.Clock;
 import java.time.ZonedDateTime;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-@AllArgsConstructor
 public final class CommandHandler {
 
     /*
@@ -21,10 +18,18 @@ public final class CommandHandler {
     private final ReminderIdGenerator idGenerator;
     private final Clock clock;
 
+    public CommandHandler(final ReminderEventStore eventStore,
+                          final ReminderIdGenerator idGenerator,
+                          final Clock clock) {
+        this.eventStore = eventStore;
+        this.idGenerator = idGenerator;
+        this.clock = clock;
+    }
+
     public ReminderState schedule(final ReminderType reminderType, final String interventionId, final ZonedDateTime scheduledTime) {
         final var reminderId = idGenerator.generate();
         final var aggregate = handleFirstCommand(reminderId, () -> ReminderAggregate.scheduleNewReminder(reminderId, interventionId, reminderType, DEFAULT_COUNTRY, scheduledTime, clock));
-        return aggregate.getState();
+        return aggregate.state();
     }
 
     public void reschedule(final String reminderId, final ZonedDateTime scheduledTime) {

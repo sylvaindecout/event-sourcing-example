@@ -12,14 +12,14 @@ class StreamRevisionTest {
 
     @Property
     void should_increment_revision(@ForAll StreamRevision revision) {
-        assertThat(revision.next().getValue())
-            .isEqualTo(revision.getValue() + 1);
+        assertThat(revision.next().value())
+                .isEqualTo(revision.value() + 1);
     }
 
     @Property
     void should_fail_to_check_that_revision_is_the_next_in_line_for_null(@ForAll StreamRevision revision) {
         assertThatNullPointerException()
-            .isThrownBy(() -> revision.isNext(null));
+                .isThrownBy(() -> revision.isNext(null));
     }
 
     @Property
@@ -34,7 +34,7 @@ class StreamRevisionTest {
 
     @Example
     void should_set_default_revision_to_0() {
-        assertThat(defaultStreamRevision().getValue()).isZero();
+        assertThat(defaultStreamRevision().value()).isZero();
     }
 
 }

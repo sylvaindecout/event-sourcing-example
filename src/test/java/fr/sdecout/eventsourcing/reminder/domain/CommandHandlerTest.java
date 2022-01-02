@@ -44,7 +44,7 @@ class CommandHandlerTest {
         then(eventStore).should().save(aggregateWithPendingEvents(
                 new ReminderEvent.ReminderScheduled(NEXT_ID, new StreamRevision(1), NOW, interventionId, reminderType, DEFAULT_COUNTRY, scheduledTime)
         ));
-        assertThat(state.getId()).isEqualTo(NEXT_ID);
+        assertThat(state.id()).isEqualTo(NEXT_ID);
     }
 
     @Property
@@ -390,8 +390,8 @@ class CommandHandlerTest {
     }
 
     private static ReminderAggregate aggregateWithPendingEvents(final ReminderEvent... events) {
-        return argThat(aggregate -> aggregate.getPendingEvents().size() == events.length
-                && aggregate.getPendingEvents().containsAll(asList(events)));
+        return argThat(aggregate -> aggregate.pendingEvents().size() == events.length
+                && aggregate.pendingEvents().containsAll(asList(events)));
     }
 
 }

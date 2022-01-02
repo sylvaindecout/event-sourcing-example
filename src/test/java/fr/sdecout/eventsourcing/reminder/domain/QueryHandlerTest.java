@@ -22,7 +22,7 @@ class QueryHandlerTest {
     @Example
     void should_fail_to_fetch_reminders_for_null_intervention_ID() {
         assertThatNullPointerException()
-            .isThrownBy(() -> queryHandler.getReminders(null));
+                .isThrownBy(() -> queryHandler.getReminders(null));
     }
 
     @Property
@@ -30,32 +30,32 @@ class QueryHandlerTest {
         given(eventStore.findByIntervention(interventionId)).willReturn(reminders);
 
         assertThat(queryHandler.getReminders(interventionId)).containsExactlyElementsOf(reminders.stream()
-                .map(ReminderAggregate::getState)
+                .map(ReminderAggregate::state)
                 .collect(toList()));
     }
 
     @Property
     void should_fail_to_fetch_reminder_for_given_ID_if_intervention_ID_is_null(@ForAll String reminderId) {
         assertThatNullPointerException()
-            .isThrownBy(() -> queryHandler.getReminder(null, reminderId));
+                .isThrownBy(() -> queryHandler.getReminder(null, reminderId));
     }
 
     @Property
     void should_fail_to_fetch_reminder_for_null_ID(@ForAll String interventionId) {
         assertThatNullPointerException()
-            .isThrownBy(() -> queryHandler.getReminder(interventionId, null));
+                .isThrownBy(() -> queryHandler.getReminder(interventionId, null));
     }
 
     @Property
     void should_fetch_reminder_for_given_ID(@ForAll String reminderId, @ForAll ReminderAggregate reminder) {
         given(eventStore.find(reminderId)).willReturn(Optional.of(reminder));
 
-        assertThat(queryHandler.getReminder(reminder.getState().getInterventionId(), reminderId)).contains(reminder.getState());
+        assertThat(queryHandler.getReminder(reminder.state().interventionId(), reminderId)).contains(reminder.state());
     }
 
     @Property
     void should_fail_to_fetch_reminder_for_given_ID_if_intervention_ID_does_not_match(@ForAll String interventionId, @ForAll String reminderId, @ForAll ReminderAggregate reminder) {
-        Assume.that(!interventionId.equals(reminder.getState().getInterventionId()));
+        Assume.that(!interventionId.equals(reminder.state().interventionId()));
 
         given(eventStore.find(reminderId)).willReturn(Optional.of(reminder));
 

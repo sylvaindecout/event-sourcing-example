@@ -2,25 +2,17 @@ package fr.sdecout.eventsourcing.reminder.domain;
 
 import fr.sdecout.annotations.DomainDrivenDesign;
 import fr.sdecout.eventsourcing.Aggregate;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
 
 import java.time.Clock;
 import java.time.ZonedDateTime;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 import static fr.sdecout.eventsourcing.reminder.domain.ReminderEventStream.emptyEventStream;
 import static fr.sdecout.eventsourcing.reminder.domain.ReminderState.ReminderStatus.*;
 import static java.time.Instant.now;
-import static lombok.AccessLevel.PRIVATE;
 
-@Getter
-@ToString
-@EqualsAndHashCode
-@AllArgsConstructor(access = PRIVATE)
 @DomainDrivenDesign.Aggregate(aggregateRoot = ReminderAggregate.class, members = {ReminderEvent.class})
 public final class ReminderAggregate implements Aggregate<ReminderEvent, ReminderState> {
 
@@ -48,64 +40,97 @@ public final class ReminderAggregate implements Aggregate<ReminderEvent, Reminde
     }
 
     private void schedule(final String reminderId, final String interventionId, final ReminderType type, final Country country, final ZonedDateTime scheduledTime) {
-        if (state.getStatus() == null) {
-            raise(new ReminderEvent.ReminderScheduled(reminderId, state.getVersion().next(), now(clock), interventionId, type, country, scheduledTime));
+        if (state.status() == null) {
+            raise(new ReminderEvent.ReminderScheduled(reminderId, state.version().next(), now(clock), interventionId, type, country, scheduledTime));
         }
     }
 
     void reschedule(final ZonedDateTime scheduledTime) {
-        if (state.getStatus() == PENDING) {
-            raise(new ReminderEvent.ReminderRescheduled(state.getId(), state.getVersion().next(), now(clock), scheduledTime));
+        if (state.status() == PENDING) {
+            raise(new ReminderEvent.ReminderRescheduled(state.id(), state.version().next(), now(clock), scheduledTime));
         } else {
-            throw new InvalidUpdateDeniedException(state.getId(), state.getStatus(), "reschedule to " + scheduledTime);
+            throw new InvalidUpdateDeniedException(state.id(), state.status(), "reschedule to " + scheduledTime);
         }
     }
 
     void assignTo(final String operator) {
-        if (state.getStatus() == PENDING) {
-            raise(new ReminderEvent.ReminderAssigned(state.getId(), state.getVersion().next(), now(clock), operator));
+        if (state.status() == PENDING) {
+            raise(new ReminderEvent.ReminderAssigned(state.id(), state.version().next(), now(clock), operator));
         } else {
-            throw new InvalidUpdateDeniedException(state.getId(), state.getStatus(), "assign to " + operator);
+            throw new InvalidUpdateDeniedException(state.id(), state.status(), "assign to " + operator);
         }
     }
 
     void unassign() {
-        if (state.getStatus() == PENDING) {
-            raise(new ReminderEvent.ReminderUnassigned(state.getId(), state.getVersion().next(), now(clock)));
+        if (state.status() == PENDING) {
+            raise(new ReminderEvent.ReminderUnassigned(state.id(), state.version().next(), now(clock)));
         } else {
-            throw new InvalidUpdateDeniedException(state.getId(), state.getStatus(), "unassign");
+            throw new InvalidUpdateDeniedException(state.id(), state.status(), "unassign");
         }
     }
 
     void transferTo(final Country country) {
-        if (state.getStatus() == PENDING) {
-            raise(new ReminderEvent.ReminderUnassigned(state.getId(), state.getVersion().next(), now(clock)));
-            raise(new ReminderEvent.ReminderTransferred(state.getId(), state.getVersion().next(), now(clock), country));
+        if (state.status() == PENDING) {
+            raise(new ReminderEvent.ReminderUnassigned(state.id(), state.version().next(), now(clock)));
+            raise(new ReminderEvent.ReminderTransferred(state.id(), state.version().next(), now(clock), country));
         } else {
-            throw new InvalidUpdateDeniedException(state.getId(), state.getStatus(), "transfer to " + country);
+            throw new InvalidUpdateDeniedException(state.id(), state.status(), "transfer to " + country);
         }
     }
 
     void markAsDone() {
-        if (state.getStatus() == PENDING) {
-            raise(new ReminderEvent.ReminderMarkedAsDone(state.getId(), state.getVersion().next(), now(clock)));
-        } else if (state.getStatus() != DONE) {
-            throw new InvalidUpdateDeniedException(state.getId(), state.getStatus(), "mark as done");
+        if (state.status() == PENDING) {
+            raise(new ReminderEvent.ReminderMarkedAsDone(state.id(), state.version().next(), now(clock)));
+        } else if (state.status() != DONE) {
+            throw new InvalidUpdateDeniedException(state.id(), state.status(), "mark as done");
         }
     }
 
     void reopen() {
-        if (state.getStatus() != PENDING) {
-            raise(new ReminderEvent.ReminderReopened(state.getId(), state.getVersion().next(), now(clock)));
+        if (state.status() != PENDING) {
+            raise(new ReminderEvent.ReminderReopened(state.id(), state.version().next(), now(clock)));
         }
     }
 
     void cancel() {
-        if (state.getStatus() == PENDING) {
-            raise(new ReminderEvent.ReminderCancelled(state.getId(), state.getVersion().next(), now(clock)));
-        } else if (state.getStatus() != CANCELLED) {
-            throw new InvalidUpdateDeniedException(state.getId(), state.getStatus(), "cancel");
+        if (state.status() == PENDING) {
+            raise(new ReminderEvent.ReminderCancelled(state.id(), state.version().next(), now(clock)));
+        } else if (state.status() != CANCELLED) {
+            throw new InvalidUpdateDeniedException(state.id(), state.status(), "cancel");
         }
     }
 
+    public List<? super ReminderEvent> pendingEvents() {
+        return this.pendingEvents;
+    }
+
+    public Clock clock() {
+        return this.clock;
+    }
+
+    public ReminderState state() {
+        return this.state;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ReminderAggregate that = (ReminderAggregate) o;
+        return Objects.equals(pendingEvents, that.pendingEvents) && Objects.equals(clock, that.clock) && Objects.equals(state, that.state);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(pendingEvents, clock, state);
+    }
+
+    @Override
+    public String toString() {
+        return "ReminderAggregate{" +
+                "pendingEvents=" + pendingEvents +
+                ", clock=" + clock +
+                ", state=" + state +
+                '}';
+    }
 }
