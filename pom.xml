@@ -20,7 +20,7 @@
         <junit.jupiter.version>5.8.2</junit.jupiter.version>
         <mockito.version>4.2.0</mockito.version>
         <assertj.version>3.21.0</assertj.version>
-        <jqwik.version>1.5.6</jqwik.version>
+        <jqwik.version>1.6.2</jqwik.version>
         <archunit.version>0.22.0</archunit.version>
         <lombok.version>1.18.22</lombok.version>
         <guava.version>31.0.1-jre</guava.version>
