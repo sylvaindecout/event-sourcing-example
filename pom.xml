@@ -22,7 +22,7 @@
         <assertj.version>3.21.0</assertj.version>
         <jqwik.version>1.6.2</jqwik.version>
         <archunit.version>0.22.0</archunit.version>
-        <guava.version>31.0.1-jre</guava.version>
+        <guava.version>32.0.0-jre</guava.version>
         <documentation-annotations.version>0.1.4</documentation-annotations.version>
 
         <!-- Maven plug-in versions -->
